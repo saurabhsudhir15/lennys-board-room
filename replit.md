@@ -1,44 +1,107 @@
-# [Project name]
+# Lenny's Board of Directors
 
-_Replace the heading above with the project's name, and this line with one sentence describing what this app does for users._
+A Streamlit app that assembles a personalized advisory board from Lenny Rachitsky's podcast guests using RAG and LLMs.
 
 ## Run & Operate
 
-- `pnpm --filter @workspace/api-server run dev` — run the API server (port 5000)
-- `pnpm run typecheck` — full typecheck across all packages
-- `pnpm run build` — typecheck + build all packages
-- `pnpm --filter @workspace/api-spec run codegen` — regenerate API hooks and Zod schemas from the OpenAPI spec
-- `pnpm --filter @workspace/db run push` — push DB schema changes (dev only)
-- Required env: `DATABASE_URL` — Postgres connection string
+- `Start application` workflow — runs the Streamlit app on port 5000
+- `cd artifacts/lennys-board && python ingest.py` — one-time data ingestion (run from shell after setting up Supabase)
+- Required env secrets: `OPENAI_API_KEY`, `SUPABASE_URL`, `SUPABASE_KEY`
 
 ## Stack
 
-- pnpm workspaces, Node.js 24, TypeScript 5.9
-- API: Express 5
-- DB: PostgreSQL + Drizzle ORM
-- Validation: Zod (`zod/v4`), `drizzle-zod`
-- API codegen: Orval (from OpenAPI spec)
-- Build: esbuild (CJS bundle)
+- Python 3.11, Streamlit
+- OpenAI (gpt-4o-mini for board responses, gpt-4o for synthesis, text-embedding-3-small for embeddings)
+- Supabase (PostgreSQL + pgvector for RAG retrieval)
+- pnpm workspaces, Node.js 24, TypeScript 5.9 (pre-existing API server)
 
 ## Where things live
 
-_Populate as you build — short repo map plus pointers to the source-of-truth file for DB schema, API contracts, theme files, etc._
+- `artifacts/lennys-board/app.py` — Streamlit UI, zero business logic
+- `artifacts/lennys-board/board.py` — board assembly (RAG retrieval + LLM calls)
+- `artifacts/lennys-board/ingest.py` — standalone ingestion script, run once
+- `artifacts/lennys-board/config.py` — all editable settings: models, roles, guest titles
+- `artifacts/lennys-board/.streamlit/config.toml` — Streamlit server config
 
 ## Architecture decisions
 
-_Populate as you build — non-obvious choices a reader couldn't infer from the code (3-5 bullets)._
+- Contract-first RAG: analyze problem → generate search queries → embed → match via Supabase `match_chunks` RPC → select board members → parallel LLM calls
+- All 5 board member responses run in parallel via `ThreadPoolExecutor(max_workers=5)` for speed
+- Token cost logging via `st.session_state["call_log"]` — visible in Session Stats expander
+- Config fully centralized in `config.py` — swap models with one line
+
+## Supabase Setup
+
+Before running `ingest.py`, create the `lenny_chunks` table and `match_chunks` RPC in Supabase SQL editor:
+
+```sql
+create extension if not exists vector;
+
+create table if not exists lenny_chunks (
+  id bigserial primary key,
+  content text,
+  embedding vector(1536),
+  guest_name text,
+  title text,
+  type text,
+  date text,
+  description text
+);
+
+create or replace function match_chunks(
+  query_embedding vector(1536),
+  match_count int default 10
+)
+returns table (
+  id bigint,
+  content text,
+  guest_name text,
+  title text,
+  date text,
+  description text,
+  similarity float
+)
+language plpgsql
+as $$
+begin
+  return query
+  select
+    lenny_chunks.id,
+    lenny_chunks.content,
+    lenny_chunks.guest_name,
+    lenny_chunks.title,
+    lenny_chunks.date,
+    lenny_chunks.description,
+    1 - (lenny_chunks.embedding <=> query_embedding) as similarity
+  from lenny_chunks
+  order by lenny_chunks.embedding <=> query_embedding
+  limit match_count;
+end;
+$$;
+```
 
 ## Product
 
-_Describe the high-level user-facing capabilities of this app once they exist._
+1. User describes a product problem in a text area (or picks an example chip)
+2. Problem is analyzed to produce semantic search queries
+3. Relevant podcast content is retrieved from Supabase via pgvector similarity search
+4. 5 board members are selected from matching guests and assigned roles (Challenger, Operator, Visionary, User Advocate, Data Oracle)
+5. All 5 board perspectives are generated in parallel
+6. A debate between the two most philosophically opposed members is generated
+7. A synthesis (agreement / open question / next move) is produced
+8. Sources, session cost, and token stats are shown in collapsible expanders
 
 ## User preferences
 
-_Populate as you build — explicit user instructions worth remembering across sessions._
+- One file, one job — keep code clean and separated by concern
+- All configurable settings in config.py only
 
 ## Gotchas
 
-_Populate as you build — sharp edges, "always run X before Y" rules._
+- Run `python ingest.py` from `artifacts/lennys-board/` directory, not the root
+- Supabase `match_chunks` RPC must exist before the app can retrieve content
+- Streamlit is at `/home/runner/workspace/.pythonlibs/bin/streamlit` (not on global PATH)
+- `enableCORS = false` and `enableXsrfProtection = false` required in .streamlit/config.toml for Replit proxy
 
 ## Pointers
 

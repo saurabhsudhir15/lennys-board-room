@@ -1,0 +1,11 @@
+version = "1"
+kind = "web"
+title = "Lenny's Board of Directors"
+previewPath = "/"
+
+[[services]]
+name = "web"
+localPort = 5000
+paths = ["/"]
+command = "cd artifacts/lennys-board && /home/runner/workspace/.pythonlibs/bin/streamlit run app.py --server.port 5000"
+outputType = "webview"

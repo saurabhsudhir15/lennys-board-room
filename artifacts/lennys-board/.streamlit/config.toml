@@ -1,0 +1,11 @@
+[server]
+port = 8081
+headless = true
+address = "0.0.0.0"
+enableCORS = false
+enableXsrfProtection = false
+
+[browser]
+gatherUsageStats = false
+serverAddress = "12cbdf61-99c3-4841-b021-3a1906db9180-00-1l75k0vkpkzym.pike.replit.dev"
+serverPort = 443
