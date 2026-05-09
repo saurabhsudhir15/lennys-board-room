@@ -61,7 +61,7 @@ def get_embedding(client: OpenAI, text: str) -> list:
 
 def main():
     openai_client = OpenAI(api_key=os.environ["OPENAI_API_KEY"])
-    sb = create_client(os.environ["SUPABASE_URL"], os.environ["SUPABASE_KEY"])
+    sb = create_client(os.environ["SUPABASE_URL"], os.environ["SUPABASE_SECRET_KEY"])
 
     clone_if_needed()
 
