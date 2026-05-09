@@ -1,6 +1,7 @@
 """
 Standalone ingestion script. Run once: python ingest.py
 """
+
 import os
 import re
 import yaml
@@ -18,6 +19,7 @@ def clone_if_needed():
     if not Path(DATA_DIR).exists():
         print(f"Cloning Lenny's data repo...")
         import subprocess
+
         subprocess.run(["git", "clone", REPO_URL, DATA_DIR], check=True)
         print("Clone complete.")
     else:
@@ -42,7 +44,7 @@ def chunk_text(text: str, chunk_size: int = 500, overlap: int = 100) -> list[str
     chunks = []
     step = chunk_size - overlap
     for i in range(0, max(1, len(words) - overlap), step):
-        chunk = " ".join(words[i:i + chunk_size])
+        chunk = " ".join(words[i : i + chunk_size])
         if chunk.strip():
             chunks.append(chunk)
         if i + chunk_size >= len(words):
@@ -52,16 +54,14 @@ def chunk_text(text: str, chunk_size: int = 500, overlap: int = 100) -> list[str
 
 def get_embedding(client: OpenAI, text: str) -> list:
     response = client.embeddings.create(
-        model=config.EMBED_MODEL,
-        input=text,
-        dimensions=config.EMBED_DIMENSIONS
+        model=config.EMBED_MODEL, input=text, dimensions=config.EMBED_DIMENSIONS
     )
     return response.data[0].embedding
 
 
 def main():
     openai_client = OpenAI(api_key=os.environ["OPENAI_API_KEY"])
-    sb = create_client(os.environ["SUPABASE_URL"], os.environ["SUPABASE_KEY"])
+    sb = create_client(os.environ["SUPABASE_URL"], os.environ["SUPABASE_SECRET_KEY"])
 
     clone_if_needed()
 
@@ -78,7 +78,9 @@ def main():
             md_files.extend(list(folder_path.glob("*.md")))
 
     if not md_files:
-        print(f"No markdown files found in {DATA_DIR}/podcasts/ or {DATA_DIR}/newsletters/")
+        print(
+            f"No markdown files found in {DATA_DIR}/podcasts/ or {DATA_DIR}/newsletters/"
+        )
         return
 
     total = len(md_files)
@@ -103,15 +105,17 @@ def main():
         rows = []
         for chunk in chunks:
             embedding = get_embedding(openai_client, chunk)
-            rows.append({
-                "content": chunk,
-                "embedding": embedding,
-                "guest_name": guest_name,
-                "title": title,
-                "type": doc_type,
-                "date": date,
-                "description": description
-            })
+            rows.append(
+                {
+                    "content": chunk,
+                    "embedding": embedding,
+                    "guest_name": guest_name,
+                    "title": title,
+                    "type": doc_type,
+                    "date": date,
+                    "description": description,
+                }
+            )
 
         if rows:
             sb.table("lenny_chunks").insert(rows).execute()
