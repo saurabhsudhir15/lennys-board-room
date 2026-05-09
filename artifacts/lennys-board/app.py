@@ -1,3 +1,4 @@
+import re
 import streamlit as st
 import config
 import board
@@ -10,185 +11,363 @@ st.set_page_config(
 
 st.markdown("""
 <style>
-    /* Global background */
-    .stApp {
-        background-color: #0D1B2A;
-        color: #FFFFFF;
+    /* ── Reset & base ── */
+    * { box-sizing: border-box; }
+
+    html, body, [data-testid="stAppViewContainer"],
+    [data-testid="stApp"], .stApp {
+        background-color: #000000 !important;
+        color: #f5f5f7 !important;
     }
-    [data-testid="stAppViewContainer"] {
-        background-color: #0D1B2A;
-    }
+
     [data-testid="stHeader"] {
-        background-color: #0D1B2A;
-    }
-    section[data-testid="stSidebar"] {
-        background-color: #0D1B2A;
+        background-color: #000000 !important;
+        border-bottom: none !important;
     }
 
-    /* Text */
-    .stApp, .stApp p, .stApp label, .stApp span {
-        color: #FFFFFF;
+    /* Remove default padding */
+    .main .block-container {
+        padding-top: 0 !important;
+        padding-bottom: 80px !important;
+        max-width: 960px !important;
+        margin: 0 auto !important;
     }
 
-    /* Main title */
-    .main-title {
-        font-size: 2.8rem;
-        font-weight: 800;
-        color: #C9A84C;
-        margin-bottom: 0.2rem;
-    }
-    .main-subtitle {
-        font-size: 1.1rem;
-        color: #AABBC8;
-        margin-bottom: 2rem;
+    /* ── Typography ── */
+    body, .stApp, p, span, label, div {
+        font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display",
+                     "Helvetica Neue", sans-serif !important;
+        color: #f5f5f7;
     }
 
-    /* Gold divider */
-    .gold-divider {
-        border: none;
-        border-top: 2px solid #C9A84C;
-        margin: 1.5rem 0;
-    }
+    /* ── Hide Streamlit chrome ── */
+    #MainMenu { visibility: hidden !important; }
+    footer { visibility: hidden !important; }
+    header { visibility: hidden !important; }
+    [data-testid="stToolbar"] { display: none !important; }
+    [data-testid="stDecoration"] { display: none !important; }
 
-    /* Board member card */
-    .board-card {
-        background-color: #142130;
-        border: 1px solid #1E3045;
-        border-radius: 10px;
-        padding: 1.2rem;
-        margin-bottom: 1rem;
-        height: 100%;
+    /* ── Landing hero ── */
+    .hero-wrap {
+        padding: 96px 0 64px;
+        text-align: center;
     }
-
-    /* Role badge */
-    .role-badge {
-        display: inline-block;
-        padding: 3px 10px;
-        border-radius: 20px;
-        font-size: 0.75rem;
-        font-weight: 700;
+    .eyebrow {
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 1.5px;
         text-transform: uppercase;
-        letter-spacing: 0.05em;
-        margin-bottom: 0.6rem;
-        color: #FFFFFF;
-    }
-
-    /* Guest name */
-    .guest-name {
-        font-size: 1.1rem;
-        font-weight: 700;
-        color: #FFFFFF;
-        margin-bottom: 0.1rem;
-    }
-    .guest-title {
-        font-size: 0.82rem;
-        color: #7899B0;
-        margin-bottom: 0.8rem;
-    }
-
-    /* Response text */
-    .response-text {
-        font-size: 0.92rem;
-        line-height: 1.65;
-        color: #D4E3EE;
-    }
-    .citation {
-        font-size: 0.8rem;
-        color: #7899B0;
-        font-style: italic;
-        margin-top: 0.8rem;
-    }
-
-    /* Debate box */
-    .debate-box {
-        background-color: #142130;
-        border-left: 4px solid #C9A84C;
-        border-radius: 4px;
-        padding: 1rem 1.2rem;
-        margin: 1rem 0;
-        color: #D4E3EE;
-        font-size: 0.95rem;
-        line-height: 1.65;
-    }
-
-    /* Synthesis card */
-    .synthesis-card {
-        background-color: #F5F5F5;
-        border-radius: 10px;
-        padding: 1.5rem;
-        margin: 1rem 0;
-        color: #0D1B2A;
-    }
-    .synthesis-label {
-        font-weight: 700;
-        font-size: 0.85rem;
-        text-transform: uppercase;
-        letter-spacing: 0.06em;
         color: #C9A84C;
-        margin-bottom: 0.3rem;
+        margin-bottom: 24px;
     }
-    .synthesis-text {
-        font-size: 0.95rem;
-        line-height: 1.7;
-        color: #1A2A38;
-        margin-bottom: 1.2rem;
+    .hero-headline {
+        font-size: 56px;
+        font-weight: 700;
+        letter-spacing: -0.5px;
+        line-height: 1.07;
+        color: #f5f5f7;
+        margin-bottom: 16px;
+    }
+    .hero-sub {
+        font-size: 19px;
+        font-weight: 400;
+        color: #6e6e73;
+        margin-bottom: 48px;
+        line-height: 1.5;
     }
 
-    /* Chips */
-    .chip-row {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
-        margin-bottom: 1.2rem;
-    }
-
-    /* Textarea */
+    /* ── Textarea ── */
     .stTextArea textarea {
-        background-color: #142130 !important;
-        color: #FFFFFF !important;
-        border: 1px solid #2A4060 !important;
-        border-radius: 8px;
-        font-size: 1rem;
+        background-color: rgba(255,255,255,0.05) !important;
+        color: #f5f5f7 !important;
+        border: 1px solid rgba(255,255,255,0.12) !important;
+        border-radius: 14px !important;
+        font-size: 16px !important;
+        font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display",
+                     "Helvetica Neue", sans-serif !important;
+        padding: 14px 16px !important;
+        line-height: 1.6 !important;
+        resize: vertical;
+    }
+    .stTextArea textarea::placeholder {
+        color: #6e6e73 !important;
+    }
+    .stTextArea textarea:focus {
+        border-color: rgba(201,168,76,0.5) !important;
+        box-shadow: none !important;
+        outline: none !important;
+    }
+    /* Hide textarea label */
+    .stTextArea label { display: none !important; }
+
+    /* ── Chips (example problem buttons) ── */
+    .chip-label {
+        font-size: 11px;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        color: #6e6e73;
+        margin-bottom: 12px;
+        margin-top: 32px;
     }
 
-    /* Buttons */
+    /* ── Buttons ── */
+    /* Primary — gold CTA */
+    div[data-testid="stButton"].primary-btn > button,
+    .primary-btn .stButton > button {
+        background-color: #C9A84C !important;
+        color: #000000 !important;
+        font-weight: 600 !important;
+        font-size: 16px !important;
+        border: none !important;
+        border-radius: 980px !important;
+        padding: 12px 28px !important;
+        transition: opacity 0.2s ease !important;
+        cursor: pointer !important;
+    }
+    div[data-testid="stButton"].primary-btn > button:hover {
+        opacity: 0.88 !important;
+    }
+
+    /* Ghost — "bring a new problem" */
+    div[data-testid="stButton"].ghost-btn > button,
+    .ghost-btn .stButton > button {
+        background-color: transparent !important;
+        color: #f5f5f7 !important;
+        font-weight: 500 !important;
+        font-size: 15px !important;
+        border: 1px solid rgba(255,255,255,0.25) !important;
+        border-radius: 980px !important;
+        padding: 10px 24px !important;
+        transition: border-color 0.2s ease !important;
+    }
+    div[data-testid="stButton"].ghost-btn > button:hover {
+        border-color: rgba(255,255,255,0.5) !important;
+    }
+
+    /* Chip style for example problems */
+    div[data-testid="stButton"].chip-btn > button {
+        background-color: rgba(255,255,255,0.06) !important;
+        color: #f5f5f7 !important;
+        font-size: 13px !important;
+        font-weight: 400 !important;
+        border: 1px solid rgba(255,255,255,0.1) !important;
+        border-radius: 980px !important;
+        padding: 8px 16px !important;
+        transition: background-color 0.2s ease !important;
+    }
+    div[data-testid="stButton"].chip-btn > button:hover {
+        background-color: rgba(255,255,255,0.1) !important;
+    }
+
+    /* Fallback — all other buttons get gold style */
     .stButton > button {
-        background-color: #C9A84C;
-        color: #0D1B2A;
-        font-weight: 700;
-        border: none;
-        border-radius: 6px;
-        padding: 0.5rem 1.5rem;
+        background-color: #C9A84C !important;
+        color: #000000 !important;
+        font-weight: 600 !important;
+        border: none !important;
+        border-radius: 980px !important;
+        padding: 10px 24px !important;
+        transition: opacity 0.2s ease !important;
     }
     .stButton > button:hover {
-        background-color: #b8963e;
-        color: #0D1B2A;
+        opacity: 0.88 !important;
     }
 
-    /* Warning */
+    /* ── Warning banner ── */
     .warning-banner {
-        background-color: #3D2000;
-        border: 1px solid #C9A84C;
-        border-radius: 8px;
-        padding: 0.8rem 1rem;
-        color: #F5D98A;
-        font-size: 0.9rem;
-        margin-bottom: 1rem;
+        background-color: rgba(201,168,76,0.08);
+        border: 1px solid rgba(201,168,76,0.3);
+        border-radius: 12px;
+        padding: 14px 18px;
+        color: #C9A84C;
+        font-size: 14px;
+        margin-bottom: 24px;
+        line-height: 1.5;
     }
 
-    /* Expander */
-    .streamlit-expanderHeader {
-        color: #C9A84C !important;
-        background-color: #142130 !important;
+    /* ── Board header ── */
+    .board-header {
+        padding: 72px 0 32px;
+        border-bottom: 1px solid rgba(255,255,255,0.08);
+        margin-bottom: 48px;
     }
+    .board-eyebrow {
+        font-size: 11px;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        color: #C9A84C;
+        margin-bottom: 10px;
+    }
+    .board-headline {
+        font-size: 40px;
+        font-weight: 700;
+        letter-spacing: -0.3px;
+        color: #f5f5f7;
+        margin-bottom: 10px;
+    }
+    .board-problem {
+        font-size: 17px;
+        color: #6e6e73;
+        font-style: italic;
+        line-height: 1.5;
+    }
+
+    /* ── Board member card ── */
+    .board-card {
+        background: rgba(255,255,255,0.04);
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 18px;
+        padding: 24px;
+        margin-bottom: 20px;
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        height: 100%;
+    }
+    .role-label {
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        color: #C9A84C;
+        margin-bottom: 10px;
+    }
+    .guest-name {
+        font-size: 17px;
+        font-weight: 700;
+        color: #f5f5f7;
+        margin-bottom: 4px;
+        letter-spacing: -0.1px;
+    }
+    .guest-title-text {
+        font-size: 13px;
+        color: #6e6e73;
+        margin-bottom: 16px;
+    }
+    .response-text {
+        font-size: 15px;
+        color: #f5f5f7;
+        line-height: 1.7;
+    }
+    .citation {
+        font-size: 12px;
+        color: #6e6e73;
+        font-style: italic;
+        margin-top: 16px;
+    }
+
+    /* ── Section divider ── */
+    .section-divider {
+        border: none;
+        border-top: 1px solid rgba(255,255,255,0.08);
+        margin: 48px 0;
+    }
+
+    /* ── Section label ── */
+    .section-label {
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        color: #6e6e73;
+        margin-bottom: 20px;
+    }
+
+    /* ── Debate box ── */
+    .debate-box {
+        background: rgba(201,168,76,0.06);
+        border-left: 2px solid #C9A84C;
+        border-radius: 12px;
+        padding: 20px 24px;
+        font-size: 15px;
+        color: #f5f5f7;
+        line-height: 1.7;
+    }
+
+    /* ── Synthesis card ── */
+    .synthesis-card {
+        background: rgba(255,255,255,0.04);
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 18px;
+        padding: 32px;
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+    }
+    .synthesis-section {
+        padding: 20px 0;
+        border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+    .synthesis-section:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
+    }
+    .synthesis-section:first-child {
+        padding-top: 0;
+    }
+    .synthesis-eyebrow {
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        color: #C9A84C;
+        margin-bottom: 10px;
+    }
+    .synthesis-text {
+        font-size: 15px;
+        color: #f5f5f7;
+        line-height: 1.7;
+    }
+
+    /* ── Expanders ── */
     [data-testid="stExpander"] {
-        border: 1px solid #1E3045;
-        border-radius: 8px;
+        background: rgba(255,255,255,0.03) !important;
+        border: 1px solid rgba(255,255,255,0.08) !important;
+        border-radius: 12px !important;
+    }
+    [data-testid="stExpander"] summary {
+        font-size: 13px !important;
+        color: #6e6e73 !important;
+        font-weight: 500 !important;
+        padding: 14px 18px !important;
+    }
+    [data-testid="stExpander"] summary:hover {
+        color: #f5f5f7 !important;
+    }
+    .streamlit-expanderContent {
+        padding: 0 18px 18px !important;
     }
 
-    /* Hide Streamlit branding */
-    #MainMenu {visibility: hidden;}
-    footer {visibility: hidden;}
+    /* ── Loading ── */
+    .loading-wrap {
+        padding: 120px 0;
+        text-align: center;
+    }
+    .loading-dot {
+        width: 12px;
+        height: 12px;
+        background: #C9A84C;
+        border-radius: 50%;
+        margin: 0 auto 24px;
+        animation: pulse 1.4s ease-in-out infinite;
+    }
+    @keyframes pulse {
+        0%, 100% { opacity: 1; transform: scale(1); }
+        50%       { opacity: 0.35; transform: scale(0.75); }
+    }
+    .loading-text {
+        font-size: 15px;
+        color: #6e6e73;
+        font-weight: 400;
+    }
+
+    /* ── Spinner override ── */
+    [data-testid="stSpinner"] > div {
+        border-top-color: #C9A84C !important;
+    }
+
+    /* ── Dataframe ── */
+    [data-testid="stDataFrame"] {
+        background: transparent !important;
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -203,13 +382,16 @@ def init_session():
 
 
 def render_landing():
-    st.markdown('<div class="main-title">Lenny\'s Board of Directors</div>', unsafe_allow_html=True)
-    st.markdown(
-        '<div class="main-subtitle">Bring your toughest product problem. Your board — assembled from Lenny\'s podcast guests — will debate it.</div>',
-        unsafe_allow_html=True
-    )
-
     chunk_count = board.get_chunk_count()
+
+    st.markdown("""
+        <div class="hero-wrap">
+            <div class="eyebrow">Powered by Lenny's Podcast</div>
+            <div class="hero-headline">Your board of advisors.<br>Assembled from the best.</div>
+            <div class="hero-sub">Five advisors from Lenny's podcast will debate your toughest product problem.</div>
+        </div>
+    """, unsafe_allow_html=True)
+
     if chunk_count == 0:
         st.markdown(
             '<div class="warning-banner">⚠️ <strong>Archive not loaded.</strong> Run <code>python ingest.py</code> in the shell to load Lenny\'s archive.</div>',
@@ -221,7 +403,26 @@ def render_landing():
             unsafe_allow_html=True
         )
 
-    st.markdown("**Try an example:**")
+    problem = st.text_area(
+        "Your problem",
+        value=st.session_state.get("problem_text", ""),
+        placeholder="Describe your product problem. The more specific, the sharper the advice.",
+        height=140,
+        label_visibility="collapsed",
+        key="problem_input"
+    )
+
+    col_btn, _ = st.columns([1, 3])
+    with col_btn:
+        if st.button("Assemble Your Board →", key="assemble_btn", use_container_width=False):
+            if problem.strip():
+                st.session_state["problem_text"] = problem
+                run_board(problem.strip())
+            else:
+                st.warning("Please describe your product problem first.")
+
+    st.markdown('<div class="chip-label">Or try an example</div>', unsafe_allow_html=True)
+
     cols = st.columns(len(config.EXAMPLE_PROBLEMS))
     for i, example in enumerate(config.EXAMPLE_PROBLEMS):
         with cols[i]:
@@ -229,39 +430,42 @@ def render_landing():
                 st.session_state["problem_text"] = example
                 st.rerun()
 
-    problem = st.text_area(
-        "Your problem",
-        value=st.session_state.get("problem_text", ""),
-        placeholder="Describe your product problem. The more specific you are, the sharper the advice.",
-        height=140,
-        label_visibility="collapsed",
-        key="problem_input"
-    )
-
-    if st.button("Assemble Your Board", use_container_width=False):
-        if problem.strip():
-            st.session_state["problem_text"] = problem
-            run_board(problem.strip())
-        else:
-            st.warning("Please describe your product problem first.")
-
 
 def run_board(problem: str):
     st.session_state["call_log"] = []
 
-    with st.spinner("Reading your situation..."):
-        analysis = board.analyze_problem(problem)
+    steps = [
+        "Reading your situation…",
+        "Scanning episodes for the right advisors…",
+        "Assembling your board…",
+        "Preparing their perspectives…",
+    ]
 
-    with st.spinner("Scanning episodes for the right advisors..."):
-        chunks = board.retrieve_chunks(analysis.get("search_queries", [problem]))
+    placeholder = st.empty()
 
-    with st.spinner("Assembling your board..."):
-        board_members = board.select_board(problem, chunks)
+    def show_step(msg):
+        placeholder.markdown(f"""
+            <div class="loading-wrap">
+                <div class="loading-dot"></div>
+                <div class="loading-text">{msg}</div>
+            </div>
+        """, unsafe_allow_html=True)
 
-    with st.spinner("Preparing their perspectives..."):
-        responses = board.generate_all_responses(board_members, problem)
-        debate = board.generate_debate(board_members, responses)
-        synthesis = board.generate_synthesis(problem, board_members, responses)
+    show_step(steps[0])
+    analysis = board.analyze_problem(problem)
+
+    show_step(steps[1])
+    chunks = board.retrieve_chunks(analysis.get("search_queries", [problem]))
+
+    show_step(steps[2])
+    board_members = board.select_board(problem, chunks)
+
+    show_step(steps[3])
+    responses = board.generate_all_responses(board_members, problem)
+    debate = board.generate_debate(board_members, responses)
+    synthesis = board.generate_synthesis(problem, board_members, responses)
+
+    placeholder.empty()
 
     st.session_state["board_result"] = {
         "problem": problem,
@@ -281,52 +485,69 @@ def render_board():
     debate = result["debate"]
     synthesis = result["synthesis"]
 
-    st.markdown('<div class="main-title">Your Board</div>', unsafe_allow_html=True)
-    st.markdown(f'<div class="main-subtitle">Problem: <em>{problem}</em></div>', unsafe_allow_html=True)
-    st.markdown('<hr class="gold-divider">', unsafe_allow_html=True)
+    st.markdown(f"""
+        <div class="board-header">
+            <div class="board-eyebrow">Your Board</div>
+            <div class="board-headline">Five advisors. One problem.</div>
+            <div class="board-problem">{problem}</div>
+        </div>
+    """, unsafe_allow_html=True)
 
     row1 = board_members[:3]
     row2 = board_members[3:]
 
-    cols1 = st.columns(3)
+    cols1 = st.columns(3, gap="medium")
     for i, member in enumerate(row1):
         with cols1[i]:
             render_member_card(member, responses[i])
 
     if row2:
-        gap_col, col_a, col_b, gap_col2 = st.columns([0.5, 1, 1, 0.5])
+        _, col_a, col_b, _ = st.columns([0.5, 1, 1, 0.5], gap="medium")
         for col, member in zip([col_a, col_b], row2):
             with col:
                 render_member_card(member, responses[board_members.index(member)])
 
-    st.markdown('<hr class="gold-divider">', unsafe_allow_html=True)
-    st.markdown("### The Debate")
+    st.markdown('<hr class="section-divider">', unsafe_allow_html=True)
+    st.markdown('<div class="section-label">The Debate</div>', unsafe_allow_html=True)
     st.markdown(f'<div class="debate-box">{debate}</div>', unsafe_allow_html=True)
 
-    st.markdown('<hr class="gold-divider">', unsafe_allow_html=True)
-    st.markdown("### Board Synthesis")
+    st.markdown('<hr class="section-divider">', unsafe_allow_html=True)
+    st.markdown('<div class="section-label">Board Synthesis</div>', unsafe_allow_html=True)
     render_synthesis(synthesis)
 
-    with st.expander("Sources"):
-        for member in board_members:
-            title = member.get("title", "Lenny's Podcast")
-            date = member.get("date", "")
-            date_str = f" · {date}" if date else ""
-            st.markdown(f"**{member['guest_name']}** — *{title}{date_str}*")
+    st.markdown('<hr class="section-divider">', unsafe_allow_html=True)
 
-    with st.expander("Session Stats"):
-        call_log = st.session_state.get("call_log", [])
-        if call_log:
-            import pandas as pd
-            df = pd.DataFrame(call_log)
-            total_cost = df["cost_usd"].sum()
-            st.dataframe(df, use_container_width=True)
-            st.markdown(f"**Total session cost: ${total_cost:.4f}**")
-        else:
-            st.write("No calls logged yet.")
+    col_src, col_stats = st.columns(2, gap="medium")
+    with col_src:
+        with st.expander("Sources"):
+            for member in board_members:
+                title = member.get("title", "Lenny's Podcast")
+                date = member.get("date", "")
+                date_str = f" · {date}" if date else ""
+                st.markdown(
+                    f'<span style="color:#f5f5f7;font-weight:600;">{member["guest_name"]}</span>'
+                    f'<span style="color:#6e6e73;font-size:13px;"> — {title}{date_str}</span>',
+                    unsafe_allow_html=True
+                )
 
-    st.markdown('<hr class="gold-divider">', unsafe_allow_html=True)
-    if st.button("Bring a new problem"):
+    with col_stats:
+        with st.expander("Session Stats"):
+            call_log = st.session_state.get("call_log", [])
+            if call_log:
+                import pandas as pd
+                df = pd.DataFrame(call_log)
+                total_cost = df["cost_usd"].sum()
+                st.dataframe(df, use_container_width=True)
+                st.markdown(
+                    f'<div style="font-size:13px;color:#6e6e73;margin-top:8px;">Total: '
+                    f'<span style="color:#f5f5f7;font-weight:600;">${total_cost:.4f}</span></div>',
+                    unsafe_allow_html=True
+                )
+            else:
+                st.markdown('<span style="font-size:13px;color:#6e6e73;">No calls logged yet.</span>', unsafe_allow_html=True)
+
+    st.markdown("<br>", unsafe_allow_html=True)
+    if st.button("← Bring a new problem", key="new_problem_btn"):
         st.session_state["board_result"] = None
         st.session_state["call_log"] = []
         st.session_state["problem_text"] = ""
@@ -336,15 +557,16 @@ def render_board():
 def render_member_card(member: dict, response: str):
     role = member["role"]
     guest_name = member["guest_name"]
-    role_color = config.BOARD_ROLES.get(role, {}).get("color", "#666")
     guest_title = config.GUEST_TITLES.get(guest_name, "Product Leader")
+
+    safe_response = response.replace("<", "&lt;").replace(">", "&gt;")
 
     st.markdown(
         f'<div class="board-card">'
-        f'<span class="role-badge" style="background-color:{role_color};">{role}</span>'
+        f'<div class="role-label">{role}</div>'
         f'<div class="guest-name">{guest_name}</div>'
-        f'<div class="guest-title">{guest_title}</div>'
-        f'<div class="response-text">{response}</div>'
+        f'<div class="guest-title-text">{guest_title}</div>'
+        f'<div class="response-text">{safe_response}</div>'
         f'<div class="citation">— {guest_name}, Lenny\'s Podcast</div>'
         f'</div>',
         unsafe_allow_html=True
@@ -352,16 +574,10 @@ def render_member_card(member: dict, response: str):
 
 
 def render_synthesis(synthesis_text: str):
-    labels = {
-        "What the board agrees on": None,
-        "The open question": None,
-        "Your next move": None
-    }
-
-    import re
     current_label = None
     current_text = []
     sections = {}
+    labels = ["What the board agrees on", "The open question", "Your next move"]
 
     for line in synthesis_text.split("\n"):
         line = line.strip()
@@ -383,14 +599,21 @@ def render_synthesis(synthesis_text: str):
     if current_label:
         sections[current_label] = " ".join(current_text).strip()
 
-    card_html = '<div class="synthesis-card">'
-    for label in ["What the board agrees on", "The open question", "Your next move"]:
+    sections_html = ""
+    for label in labels:
         text = sections.get(label, "")
-        card_html += f'<div class="synthesis-label">{label}</div>'
-        card_html += f'<div class="synthesis-text">{text}</div>'
-    card_html += '</div>'
+        safe_text = text.replace("<", "&lt;").replace(">", "&gt;")
+        sections_html += (
+            f'<div class="synthesis-section">'
+            f'<div class="synthesis-eyebrow">{label}</div>'
+            f'<div class="synthesis-text">{safe_text}</div>'
+            f'</div>'
+        )
 
-    st.markdown(card_html, unsafe_allow_html=True)
+    st.markdown(
+        f'<div class="synthesis-card">{sections_html}</div>',
+        unsafe_allow_html=True
+    )
 
 
 def main():

@@ -1,0 +1,97 @@
+Redesign the entire UI of app.py with Apple-inspired design.                                                                                                                                                        
+  Do not change any logic in board.py, ingest.py or config.py.                                                                                                                                                        
+                                                                                                                                                                                                                      
+  ## Design Language                                                                                                                                                                                                  
+                                                                                                                                                                                                                      
+  Color palette:                                                                                                                                                                                                      
+  - Background: #000000
+  - Surface (cards): rgba(255, 255, 255, 0.05)
+  - Card border: rgba(255, 255, 255, 0.08)                                                                                                                                                                            
+  - Primary text: #f5f5f7
+  - Secondary text: #6e6e73                                                                                                                                                                                           
+  - Accent: #C9A84C (gold, used sparingly)
+  - Role badge background: rgba(255,255,255,0.08)                                                                                                                                                                     
+                                                                                                                                                                                                                      
+  Typography:
+  - Font stack: -apple-system, BlinkMacSystemFont, "SF Pro Display",                                                                                                                                                  
+    "Helvetica Neue", sans-serif                                                                                                                                                                                      
+  - Hero headline: 56px, font-weight 700, letter-spacing -0.5px
+  - Subheadline: 19px, color #6e6e73, font-weight 400                                                                                                                                                                 
+  - Card text: 15px, line-height 1.6                                                                                                                                                                                  
+  - All caps labels: 11px, letter-spacing 1px, color #6e6e73                                                                                                                                                          
+                                                                                                                                                                                                                      
+  Effects:             
+  - Cards: backdrop-filter blur(20px), subtle border, no heavy shadows                                                                                                                                                
+  - Buttons: smooth border-radius 980px (fully rounded),                                                                                                                                                              
+    background #C9A84C, color #000, font-weight 600                                                                                                                                                                   
+  - Hover states: opacity transition 0.2s ease                                                                                                                                                                        
+  - Section dividers: 1px solid rgba(255,255,255,0.08)                                                                                                                                                                
+                                                                                                                                                                                                                      
+  Spacing:             
+  - Generous padding — Apple uses 80-100px vertical rhythm                                                                                                                                                            
+  - Cards have 24px internal padding                                                                                                                                                                                  
+  - Grid gap: 20px                                                                                                                                                                                                    
+                                                                                                                                                                                                                      
+  ## Landing Page                                                                                                                                                                                                     
+                       
+  Full-width centered layout:                                                                                                                                                                                         
+  - Top: small eyebrow text in gold — "POWERED BY LENNY'S PODCAST"
+  - Hero headline (large, bold, white):                                                                                                                                                                               
+    "Your board of advisors."
+    "Assembled from the best."                                                                                                                                                                                        
+    Five advisors from Lenny's podcast will debate it."                                                                                                                                                               
+  - Text area: dark surface, subtle border, rounded corners,                                                                                                                                                          
+    placeholder text in #6e6e73                                                                                                                                                                                       
+  - Example problem chips: pill-shaped, surface background,                                                                                                                                                           
+    border rgba(255,255,255,0.1), small text                                                                                                                                                                          
+  - CTA button: gold, fully rounded, "Assemble Your Board →"                                                                                                                                                          
+                                                                                                                                                                                                                      
+  ## Loading State                                                                                                                                                                                                    
+                                                                                                                                                                                                                      
+  Centered, minimal:                                                                                                                                                                                                  
+  - Animated gold dot pulsing
+  - Clean status text in #6e6e73, 15px
+  - No progress bars                                                                                                                                                                                                  
+                                                                                                                                                                                                                      
+  ## Board State                                                                                                                                                                                                      
+                                                                                                                                                                                                                      
+  Board member cards (frosted glass):
+  - Background: rgba(255,255,255,0.04)                                                                                                                                                                                
+  - Border: 1px solid rgba(255,255,255,0.08)
+  - Border-radius: 18px                                                                                                                                                                                               
+  - Padding: 24px      
+  - Role label: small caps, gold color, 11px, letter-spacing 1px                                                                                                                                                      
+  - Guest name: 17px, bold, #f5f5f7                             
+  - Guest title: 13px, #6e6e73                                                                                                                                                                                        
+  - Response text: 15px, #f5f5f7, line-height 1.7                                                                                                                                                                     
+  - Citation: 12px, #6e6e73, italic                                                                                                                                                                                   
+                                                                                                                                                                                                                      
+  Debate section:                                                                                                                                                                                                     
+  - Left border: 2px solid #C9A84C                                                                                                                                                                                    
+  - Background: rgba(201, 168, 76, 0.06)
+  - Border-radius: 12px                                                                                                                                                                                               
+  - Padding: 20px 24px 
+                                                                                                                                                                                                                      
+  Synthesis section:   
+  - Surface card, full width                                                                                                                                                                                          
+  - Three labeled paragraphs, each with small gold eyebrow label
+  - Clean divider between paragraphs                                                                                                                                                                                  
+                                                                                                                                                                                                                      
+  Session Stats expander:                                                                                                                                                                                             
+  - Collapsed by default                                                                                                                                                                                              
+  - Minimal table styling
+                         
+  "Bring a new problem" button:                                                                                                                                                                                       
+  - Ghost style: transparent background, white border, white text                                                                                                                                                     
+  - Fully rounded                                                                                                                                                                                                     
+                                                                                                                                                                                                                      
+  ## Apply all styles via st.markdown with unsafe_allow_html=True
+  using a single <style> block at the top of app.py.                                                                                                                                                                  
+  Override Streamlit defaults:                      
+  - Hide the default hamburger menu and footer                                                                                                                                                                        
+  - Remove default padding from main container                                                                                                                                                                        
+  - Set page background to #000000            
+  - Remove Streamlit's default red/orange accent colors                                                                                                                                                               
+                       
+  ---                                                                                                                                                                                                                 
+  Paste this into Replit Agent. It will keep all the logic untouched and only redesign the UI.
