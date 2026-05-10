@@ -136,8 +136,9 @@ def select_board(problem: str, chunks: list) -> list:
                     f"You are assembling a 5-person advisory board from Lenny's podcast guests to advise on a product problem.\n"
                     f"Available roles: {roles}\n"
                     f"Select 5 distinct guests from the list provided. Assign each a role that best fits their expertise.\n"
-                    f"Return a JSON array of 5 objects, each with: guest_name, role, chunk_content (the snippet), title, date.\n"
-                    f"Return only valid JSON array, no markdown."
+                    f"Return a JSON object with a 'board' key containing an array of exactly 5 objects, "
+                    f"each with: guest_name, role, chunk_content (copy the snippet exactly), title, date.\n"
+                    f"Return only valid JSON object, no markdown."
                 )
             },
             {
@@ -154,10 +155,18 @@ def select_board(problem: str, chunks: list) -> list:
     log_call("select_board", config.ANALYSIS_MODEL, usage.prompt_tokens, usage.completion_tokens)
 
     raw = json.loads(response.choices[0].message.content)
+    board = []
     if isinstance(raw, list):
-        board = raw
-    else:
-        board = raw.get("board", raw.get("members", list(raw.values())[0] if raw else []))
+              board = raw                                                                                                                                                                                                     
+    elif isinstance(raw, dict):
+              for key in ["board", "members", "advisors", "board_members"]:                                                                                                                                                   
+                  if key in raw and isinstance(raw[key], list):
+                      board = raw[key]
+                      break                                                                                                                                                                                                   
+              if not board:
+                  board = next((v for v in raw.values() if isinstance(v, list)), [])                                                                                                                                          
+
+    board = [m for m in board if isinstance(m, dict) and "guest_name" in m and "role" in m and len(m.get("chunk_content", "")) > 50]
 
     if len(board) < 5:
         existing_names = {m["guest_name"] for m in board}
@@ -200,6 +209,8 @@ def generate_board_response(guest_name: str, role: str, role_description: str, c
                 "content": (
                     f"A PM has brought this problem to the board: {problem}\n\n"
                     f"The most relevant insights from your conversations with Lenny:\n{chunk}\n\n"
+                    f"You must reference at least one specific idea, framework, or phrase from the transcript above. "
+                    f"Do not invent opinions not present in the excerpt.\n\n"
                     f"Give your board perspective in 150-180 words. Lead with your sharpest insight. "
                     f"Be opinionated. End with one specific action."
                 )

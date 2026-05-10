@@ -2,6 +2,7 @@
 from contextvars import ContextVar
 from types import ModuleType
 import sys
+import traceback
 
 # ---------------------------------------------------------------------------
 # Patch streamlit BEFORE importing board.py.
@@ -11,28 +12,24 @@ import sys
 # ---------------------------------------------------------------------------
 _call_log_var: ContextVar[list] = ContextVar("call_log", default=[])
 
-
 class _FakeState:
-    def __getitem__(self, key):
-        if key == "call_log":
-            return _call_log_var.get()
-        raise KeyError(key)
-
+    def __contains__(self, key):
+        return key == "call_log"
+        def __getitem__(self, key):
+            if key == "call_log":
+                return _call_log_var.get()
+            raise KeyError(key)
     def __setitem__(self, key, value):
         if key == "call_log":
             _call_log_var.set(value)
-
     def get(self, key, default=None):
         try:
             return self[key]
         except KeyError:
             return default
 
-
 class _FakeST(ModuleType):
     session_state = _FakeState()
-
-
 sys.modules.setdefault("streamlit", _FakeST("streamlit"))
 
 # ---------------------------------------------------------------------------
@@ -48,8 +45,7 @@ from pydantic import BaseModel
 app = FastAPI(title="Lenny's Board of Directors")
 
 # Allow all origins — the Lovable frontend can be on any domain
-app.add_middleware(
-    CORSMiddleware,
+app.add_middleware(CORSMiddleware,
     allow_origins=["*"],
     allow_methods=["POST", "GET", "OPTIONS"],
     allow_headers=["*"],
@@ -64,6 +60,13 @@ class ProblemRequest(BaseModel):
 async def health():
     return {"status": "ok"}
 
+@app.get("/_stcore/health")
+async def stcore_health():
+    return {"status": "ok"}
+
+@app.get("/_stcore/host-config")
+async def stcore_host_config():
+    return {} 
 
 @app.post("/assemble")
 async def assemble(body: ProblemRequest):
@@ -122,4 +125,4 @@ async def assemble(body: ProblemRequest):
         }
 
     except Exception as exc:
-        raise HTTPException(status_code=500, detail=str(exc))
+        raise HTTPException(status_code=500, detail=traceback.format_exc())
