@@ -13,9 +13,6 @@ _call_log_var: ContextVar[list] = ContextVar("call_log", default=[])
 
 
 class _FakeState:
-    def __contains__(self, key):
-          return key == "call_log" 
-    
     def __getitem__(self, key):
         if key == "call_log":
             return _call_log_var.get()
@@ -125,5 +122,4 @@ async def assemble(body: ProblemRequest):
         }
 
     except Exception as exc:
-      import traceback
-      raise HTTPException(status_code=500, detail=traceback.format_exc())
+        raise HTTPException(status_code=500, detail=str(exc))
