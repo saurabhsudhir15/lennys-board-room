@@ -30,3 +30,20 @@ NODE_ENV = "production"
 
 [services.production.health.startup]
 path = "/api/healthz"
+
+[[services]]
+localPort = 8081
+name = "Lenny's Board API"
+paths = ["/"]
+
+[services.development]
+run = "cd artifacts/lennys-board && /home/runner/workspace/.pythonlibs/bin/uvicorn main:app --host 0.0.0.0 --port 8081"
+
+[services.production]
+
+[services.production.run]
+args = ["/bin/sh", "-c", "cd /home/runner/workspace/artifacts/lennys-board && /home/runner/workspace/.pythonlibs/bin/uvicorn main:app --host 0.0.0.0 --port $PORT"]
+
+[services.production.run.env]
+PORT = "8081"
+NODE_ENV = "production"
