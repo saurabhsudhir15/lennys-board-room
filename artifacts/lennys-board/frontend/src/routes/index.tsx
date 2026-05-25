@@ -17,16 +17,16 @@ const EXAMPLES = [
 
 const CHIP_TEMPLATES: Record<string, string> = {
   "DAU flat for 3 months — can't find the cause":
-    "Our DAU has been flat for 3 months and I can't find the cause. We're a [stage] company with ~[X] MAU. The flatness started around [timeframe]. I've tried cohort analysis and a quick user survey but the data isn't pointing anywhere obvious.",
+    "Our DAU has been flat for 3 months. We're a [Series A/B] company with ~[X] MAU. We've tried [cohort analysis / surveys / feature flags] but the signal is unclear.",
 
   "CEO attached to 3 features I need to cut":
-    "My CEO is attached to [features] that I need to cut to stay focused. My case for cutting them is [reason], but every conversation hits a wall. I've tried [what you've tried] and I'm running out of runway to make the call.",
+    "My CEO is attached to [features] that I need to cut. I've tried [data, 1:1s, reframing] but keep hitting a wall. The constraint is [deadline / team morale / political capital].",
 
   "Enterprise or double down on SMB?":
-    "We're at [ARR / stage] and deciding whether to move upmarket into Enterprise or double down on SMB. The tension is [what's pulling each direction]. We've had [X] inbound Enterprise inquiries but our product and sales motion are built for SMB.",
+    "We're at [ARR / stage] and deciding whether to go Enterprise or double down on SMB. We've had [X] inbound Enterprise requests. The tension is [what's pulling each direction].",
 
   "Engineering says 6 weeks will take 6 months":
-    "Engineering is estimating 6 months for a feature I believe should take 6 weeks. The feature is [describe it]. I think the gap is due to [your hypothesis]. We have a [deadline / customer commitment] that makes this urgent.",
+    "Engineering estimates 6 months for something I think should take 6 weeks. The feature is [describe it]. We have a [deadline / commitment] that makes the gap urgent.",
 };
 
 type State =
