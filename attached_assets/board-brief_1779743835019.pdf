@@ -1,0 +1,1052 @@
+%PDF-1.3
+%ºß¬à
+3 0 obj
+<</Type /Page
+/Parent 1 0 R
+/Resources 2 0 R
+/MediaBox [0 0 595.2799999999999727 841.8899999999999864]
+/Contents 4 0 R
+>>
+endobj
+4 0 obj
+<<
+/Length 4965
+>>
+stream
+0.5670000000000001 w
+0 G
+0.09 0.08 0.06 rg
+0. 841.8899999999999864 595.2755905511811534 -841.8897637795276978 re
+f
+BT
+/F2 22 Tf
+25.2999999999999972 TL
+1. 0.42 0.208 rg
+51.0236220472441033 779.5277952755905062 Td
+(Board Brief) Tj
+ET
+BT
+/F1 8 Tf
+9.1999999999999993 TL
+0.541 0.541 0.478 rg
+51.0236220472441033 756.8506299212598378 Td
+(Powered by Lenny's Podcast) Tj
+ET
+1. 0.42 0.21 RG
+0.4251968503937008 w
+/GS1 gs
+51.0236220472441033 737.0081102362204319 m
+544.2519685039370643 737.0081102362204319 l
+S
+/GS2 gs
+BT
+/F2 7.5 Tf
+8.625 TL
+1. 0.42 0.208 rg
+3.4015748031496065 Tc
+51.0236220472441033 717.1655905511811397 Td
+(THE PROBLEM) Tj
+ET
+BT
+/F3 12 Tf
+13.7999999999999989 TL
+0.961 0.961 0.941 rg
+0. Tc
+51.0236220472441033 700.15771653543311 Td
+(Our DAU has been flat for 3 months and I can't find the cause.) Tj
+T* (                                                                                                                                                  ) Tj
+T* (                                                                   ) Tj
+T* (  Context: We're a Series B company with ~180K MAU. Our core user is a mid-market ops) Tj
+T* (manager using us daily for workflow approvals. The flatness started around February —) Tj
+T* (roughly 3 weeks after we shipped a) Tj
+T* (  redesigned home screen.                                                                                                        ) Tj
+T* (                                                                                    ) Tj
+T* (   ) Tj
+T* (  What I've already tried: cohort analysis \(no single segment is dropping, it's broad\), a quick) Tj
+T* (user survey \(mixed signals\), and reverting one UI change \(no movement\).                              ) Tj
+T* (                ) Tj
+T* (                       ) Tj
+T* (  Main constraint: unclear signal — the data isn't pointing anywhere obvious and the team is) Tj
+T* (split on whether this is a product problem or a seasonality blip.) Tj
+ET
+1. 0.42 0.21 RG
+0.4251968503937008 w
+/GS1 gs
+51.0236220472441033 446.456929133858182 m
+544.2519685039370643 446.456929133858182 l
+S
+/GS2 gs
+BT
+/F2 7.5 Tf
+8.625 TL
+1. 0.42 0.208 rg
+3.4015748031496065 Tc
+51.0236220472441033 426.614409448818833 Td
+(YOUR BOARD) Tj
+ET
+0.13 0.11 0.08 rg
+59.5275590551181182 418.1104724409448181 m
+535.7480314960630494 418.1104724409448181 l
+540.4446262190335801 418.1104724409448181 544.2519685039370643 414.3031301560412771 544.2519685039370643 409.6065354330708033 c
+544.2519685039370643 189.9214960629920199 l
+544.2519685039370643 185.224901340021546 539.5553737809665336 181.4175590551180051 535.7480314960630494 181.4175590551180051 c
+59.5275590551181182 181.4175590551180051 l
+54.8309643321475875 181.4175590551180051 51.0236220472441033 186.1141537780885074 51.0236220472441033 189.9214960629920199 c
+51.0236220472441033 409.6065354330708033 l
+51.0236220472441033 414.3031301560412771 55.7202167702146269 418.1104724409448181 59.5275590551181182 418.1104724409448181 c
+h
+f
+BT
+/F2 7.5 Tf
+8.625 TL
+1. 0.42 0.208 rg
+2.2677165354330713 Tc
+62.3622047244094517 399.6852755905511003 Td
+(VISIONARY) Tj
+ET
+BT
+/F2 10 Tf
+11.5 TL
+0.961 0.961 0.941 rg
+0. Tc
+134.1700787401574928 399.6852755905511003 Td
+(Albert Cheng) Tj
+ET
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.541 0.541 0.478 rg
+0. Tc
+62.3622047244094517 385.5120472440944468 Td
+(Lenny's Podcast) Tj
+ET
+BT
+/F1 9.5 Tf
+10.9249999999999989 TL
+0.961 0.961 0.941 rg
+0. Tc
+62.3622047244094517 369.9214960629920483 Td
+(The root of your DAU stagnation isn't purely about user confusion from the redesigned home screen; it signals a deeper structural) Tj
+T* (issue with your product-market fit. To paraphrase Lenny’s insights, successful products often root their foundation in cost efficiency) Tj
+T* (and scrappiness. The current flatness in DAU indicates a lack of compelling, sustained engagement with your offering—something) Tj
+T* (deeper than just UI tweaks.) Tj
+T* () Tj
+T* (You’ve already tried surface-level diagnostics, but the bet here isn't simply a matter of fixing user experience. Focus on the critical) Tj
+T* (operational pain points that your mid-market ops managers face daily and pivot from merely enhancing features to radically) Tj
+T* (understanding and addressing these pain points. What operational hurdles are they continually encountering that make them) Tj
+T* (disengage? Are they fully leveraging your tool’s capabilities, and if not, why?) Tj
+T* () Tj
+T* (The action item here is to launch an initiative that digs deep into the daily workflow challenges of a subset of users—conduct intimate) Tj
+T* (support sessions or shadow a few key users for a week. The insights will demand a transformative approach to the product—not just) Tj
+T* (incremental improvements.) Tj
+ET
+BT
+/F1 7.5 Tf
+8.625 TL
+0.541 0.541 0.478 rg
+0. Tc
+51.0236220472441033 22.6774015748030706 Td
+(Lenny's Board of Directors) Tj
+ET
+BT
+/F1 7.5 Tf
+8.625 TL
+0.541 0.541 0.478 rg
+0. Tc
+529.7019685039371097 22.6774015748030706 Td
+(1 / 5) Tj
+ET
+endstream
+endobj
+5 0 obj
+<</Type /Page
+/Parent 1 0 R
+/Resources 2 0 R
+/MediaBox [0 0 595.2799999999999727 841.8899999999999864]
+/Contents 6 0 R
+>>
+endobj
+6 0 obj
+<<
+/Length 5194
+>>
+stream
+0.4251968503937008 w
+1. 0.42 0.21 RG
+0.09 0.08 0.06 rg
+0. 841.8899999999999864 595.2755905511811534 -841.8897637795276978 re
+f
+0.13 0.11 0.08 rg
+59.5275590551181182 765.3545669291338527 m
+535.7480314960630494 765.3545669291338527 l
+540.4446262190335801 765.3545669291338527 544.2519685039370643 761.5472246442302549 544.2519685039370643 756.8506299212598378 c
+544.2519685039370643 521.5750393700786844 l
+544.2519685039370643 516.8784446471081537 539.5553737809665336 513.0711023622046696 535.7480314960630494 513.0711023622046696 c
+59.5275590551181182 513.0711023622046696 l
+54.8309643321475875 513.0711023622046696 51.0236220472441033 517.7676970851752003 51.0236220472441033 521.5750393700786844 c
+51.0236220472441033 756.8506299212598378 l
+51.0236220472441033 761.5472246442302549 55.7202167702146269 765.3545669291338527 59.5275590551181182 765.3545669291338527 c
+h
+f
+BT
+/F2 7.5 Tf
+8.625 TL
+1. 0.42 0.208 rg
+2.2677165354330713 Tc
+62.3622047244094517 746.9293700787401349 Td
+(CHALLENGER) Tj
+ET
+BT
+/F2 10 Tf
+11.5 TL
+0.961 0.961 0.941 rg
+0. Tc
+148.5700787401574985 746.9293700787401349 Td
+(Elena Verna 4.0) Tj
+ET
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.541 0.541 0.478 rg
+0. Tc
+62.3622047244094517 732.7561417322834814 Td
+(Lenny's Podcast) Tj
+ET
+BT
+/F1 9.5 Tf
+10.9249999999999989 TL
+0.961 0.961 0.941 rg
+0. Tc
+62.3622047244094517 717.1655905511811397 Td
+(Let’s interrogate the framing of the problem. The focus on flat DAU may be masking a more fundamental issue:) Tj
+T* (the core product experience itself and its alignment with user needs. You’ve implemented changes that didn’t yield) Tj
+T* (the expected engagement, yet you’re still treating symptoms \(flat DAU, mixed survey responses\) rather than) Tj
+T* (investigating whether your users’ workflows are effectively supported by your redesign.) Tj
+T* () Tj
+T* (You mentioned engaging with cohort analysis, but if every cohort shows no drop, can we ask if they’re even) Tj
+T* (getting value from the experience as it currently stands? Remember John Cutler’s insight about software — it) Tj
+T* (evolves through capability stages. If your redesigned home screen compromised usability or limited access to key) Tj
+T* (workflows, the result could indeed be stagnant DAUs irrespective of traffic from new users.) Tj
+T* () Tj
+T* (Before diving deeper into tactics or research, let’s reframe the issue: What if the problem is not just about flat) Tj
+T* (DAU but about the perceived value users get from your product? Start with a usability audit of the redesign.) Tj
+T* (Identify if the new capabilities have disrupted the flow, rather than sticking to the assumption that familiarity is) Tj
+T* (enough.) Tj
+ET
+0.13 0.11 0.08 rg
+59.5275590551181182 498.8978740157479592 m
+535.7480314960630494 498.8978740157479592 l
+540.4446262190335801 498.8978740157479592 544.2519685039370643 495.0905317308444751 544.2519685039370643 490.3939370078739444 c
+544.2519685039370643 286.2994488188975311 l
+544.2519685039370643 281.6028540959270572 539.5553737809665336 277.7955118110235162 535.7480314960630494 277.7955118110235162 c
+59.5275590551181182 277.7955118110235162 l
+54.8309643321475875 277.7955118110235162 51.0236220472441033 282.4921065339940469 51.0236220472441033 286.2994488188975311 c
+51.0236220472441033 490.3939370078739444 l
+51.0236220472441033 495.0905317308444751 55.7202167702146269 498.8978740157479592 59.5275590551181182 498.8978740157479592 c
+h
+f
+BT
+/F2 7.5 Tf
+8.625 TL
+1. 0.42 0.208 rg
+2.2677165354330713 Tc
+62.3622047244094517 480.4726771653542983 Td
+(OPERATOR) Tj
+ET
+BT
+/F2 10 Tf
+11.5 TL
+0.961 0.961 0.941 rg
+0. Tc
+134.9700787401575042 480.4726771653542983 Td
+(Amol Avasare) Tj
+ET
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.541 0.541 0.478 rg
+0. Tc
+62.3622047244094517 466.2994488188975879 Td
+(Lenny's Podcast) Tj
+ET
+BT
+/F1 9.5 Tf
+10.9249999999999989 TL
+0.961 0.961 0.941 rg
+0. Tc
+62.3622047244094517 450.7088976377952463 Td
+(The flat DAU is a classic signal that something's off, and your instincts on the UI change are likely correct—they) Tj
+T* (set the stage for a ripple effect. It’s not just a product issue; it’s a carousel of user experience, especially if that) Tj
+T* (redesign misaligned with the user's workflow approval needs. ) Tj
+T* () Tj
+T* (You mentioned mixed signals from the survey, which tells me we haven’t pinpointed the user's friction points. I’d) Tj
+T* (push you to get more granular here: instead of broad surveys, conduct user sessions with those ops managers.) Tj
+T* (Observe their workflows in real-time—get them to use the product and show them exactly where they struggle.) Tj
+T* (This isn’t just about asking questions; it’s about witnessing pain points firsthand.) Tj
+T* () Tj
+T* (As for next steps, who is going to take ownership of organizing these user observation sessions? You need a) Tj
+T* (named owner with a deadline—set it for early next week. Get those insights to identify what’s blocking the user) Tj
+T* (journey and translate that into actionable fixes.) Tj
+ET
+BT
+/F1 7.5 Tf
+8.625 TL
+0.541 0.541 0.478 rg
+0. Tc
+51.0236220472441033 22.6774015748030706 Td
+(Lenny's Board of Directors) Tj
+ET
+BT
+/F1 7.5 Tf
+8.625 TL
+0.541 0.541 0.478 rg
+0. Tc
+529.7019685039371097 22.6774015748030706 Td
+(2 / 5) Tj
+ET
+endstream
+endobj
+7 0 obj
+<</Type /Page
+/Parent 1 0 R
+/Resources 2 0 R
+/MediaBox [0 0 595.2799999999999727 841.8899999999999864]
+/Contents 8 0 R
+>>
+endobj
+8 0 obj
+<<
+/Length 6270
+>>
+stream
+0.4251968503937008 w
+1. 0.42 0.21 RG
+0.09 0.08 0.06 rg
+0. 841.8899999999999864 595.2755905511811534 -841.8897637795276978 re
+f
+0.13 0.11 0.08 rg
+59.5275590551181182 765.3545669291338527 m
+535.7480314960630494 765.3545669291338527 l
+540.4446262190335801 765.3545669291338527 544.2519685039370643 761.5472246442302549 544.2519685039370643 756.8506299212598378 c
+544.2519685039370643 537.1655905511810261 l
+544.2519685039370643 532.4689958282104953 539.5553737809665336 528.6616535433070112 535.7480314960630494 528.6616535433070112 c
+59.5275590551181182 528.6616535433070112 l
+54.8309643321475875 528.6616535433070112 51.0236220472441033 533.3582482662775419 51.0236220472441033 537.1655905511810261 c
+51.0236220472441033 756.8506299212598378 l
+51.0236220472441033 761.5472246442302549 55.7202167702146269 765.3545669291338527 59.5275590551181182 765.3545669291338527 c
+h
+f
+BT
+/F2 7.5 Tf
+8.625 TL
+1. 0.42 0.208 rg
+2.2677165354330713 Tc
+62.3622047244094517 746.9293700787401349 Td
+(USER ADVOCATE) Tj
+ET
+BT
+/F2 10 Tf
+11.5 TL
+0.961 0.961 0.941 rg
+0. Tc
+164.7700787401574871 746.9293700787401349 Td
+(Aishwarya Naresh Reganti + Kiriti Badam) Tj
+ET
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.541 0.541 0.478 rg
+0. Tc
+62.3622047244094517 732.7561417322834814 Td
+(Lenny's Podcast) Tj
+ET
+BT
+/F1 9.5 Tf
+10.9249999999999989 TL
+0.961 0.961 0.941 rg
+0. Tc
+62.3622047244094517 717.1655905511811397 Td
+(The flat DAU is likely a symptom of overlooked user experience issues stemming from the redesigned home) Tj
+T* (screen. While the team is debating whether this is a product issue or just seasonality, I urge you to remember that) Tj
+T* (users are often very sensitive to changes in their daily workflows—especially ops managers, who thrive on) Tj
+T* (efficiency and reliability. ) Tj
+T* () Tj
+T* (When you disrupt their visual familiarity without enough user testing or feedback loops, it can lead to) Tj
+T* (disengagement. Referring back to the insights shared by Lenny: once users are comfortable with a flow—like) Tj
+T* (using drafts—they don’t want roadblocks. If that redesigned home screen has introduced friction or confusion, it) Tj
+T* (could be steering them away from returning daily.) Tj
+T* () Tj
+T* (Instead of hunting for abstract metrics or placating to seasonal explanations, let’s roll back the home screen for a) Tj
+T* (limited segment of our users to see if a return to the familiar boosts engagement. This isn't just about flat) Tj
+T* (numbers—it's about ensuring our users feel supported and confident in their daily tasks. ) Tj
+ET
+0.13 0.11 0.08 rg
+59.5275590551181182 514.4884251968503577 m
+535.7480314960630494 514.4884251968503577 l
+540.4446262190335801 514.4884251968503577 544.2519685039370643 510.6810829119468167 544.2519685039370643 505.9844881889763428 c
+544.2519685039370643 255.1183464566928194 l
+544.2519685039370643 250.4217517337223455 539.5553737809665336 246.6144094488188045 535.7480314960630494 246.6144094488188045 c
+59.5275590551181182 246.6144094488188045 l
+54.8309643321475875 246.6144094488188045 51.0236220472441033 251.3110041717893068 51.0236220472441033 255.1183464566928194 c
+51.0236220472441033 505.9844881889763428 l
+51.0236220472441033 510.6810829119468167 55.7202167702146269 514.4884251968503577 59.5275590551181182 514.4884251968503577 c
+h
+f
+BT
+/F2 7.5 Tf
+8.625 TL
+1. 0.42 0.208 rg
+2.2677165354330713 Tc
+62.3622047244094517 496.0632283464566399 Td
+(DATA ORACLE) Tj
+ET
+BT
+/F2 10 Tf
+11.5 TL
+0.961 0.961 0.941 rg
+0. Tc
+150.1700787401574644 496.0632283464566399 Td
+(Nicole Forsgren) Tj
+ET
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.541 0.541 0.478 rg
+0. Tc
+62.3622047244094517 481.8899999999999295 Td
+(Lenny's Podcast) Tj
+ET
+BT
+/F1 9.5 Tf
+10.9249999999999989 TL
+0.961 0.961 0.941 rg
+0. Tc
+62.3622047244094517 466.2994488188975879 Td
+(Let's stop speculating about cause and start measuring the outcomes. When faced with flat DAU after a redesign,) Tj
+T* (the core question is: what does the data actually show versus what the team believes it shows? You've performed) Tj
+T* (cohort analysis without finding a drop in any segment, but that suggests the flatness isn’t a product issue for a) Tj
+T* (specific cohort—it might be more pervasive. ) Tj
+T* () Tj
+T* (What about measuring user engagement metrics beyond DAU? Are you tracking session length, feature usage, or) Tj
+T* (task completion rates? Specifically, let’s establish a segmentation cut by user activity levels. Are your most) Tj
+T* (engaged users remaining engaged? If yes, is the flat DAU primarily due to a loss of sporadic users, indicating a) Tj
+T* (product experience problem rather than a seasonal one? ) Tj
+T* () Tj
+T* (We need to gather and analyze this data to get to the core issue. Focus on understanding who is benefiting from) Tj
+T* (your product in this new layout; does the redesigned home screen resonate with everyone's workflows? ) Tj
+T* () Tj
+T* (**Action**: Track session length and feature usage over the next month segmented by user engagement levels,) Tj
+T* (particularly examining sporadic users.) Tj
+ET
+1. 0.42 0.21 RG
+0.4251968503937008 w
+/GS1 gs
+51.0236220472441033 223.9372440944881077 m
+544.2519685039370643 223.9372440944881077 l
+S
+/GS2 gs
+BT
+/F2 7.5 Tf
+8.625 TL
+1. 0.42 0.208 rg
+3.4015748031496065 Tc
+51.0236220472441033 204.0947244094487587 Td
+(THE DEBATE) Tj
+ET
+BT
+/F1 10 Tf
+11.5 TL
+0.961 0.961 0.941 rg
+0. Tc
+51.0236220472441033 187.086850393700729 Td
+(Albert Cheng to Aishwarya Naresh Reganti: Rolling back the home screen for a limited segment of users is a) Tj
+T* (reactive measure that avoids addressing the deeper structural issue of product-market fit and operational) Tj
+T* (hurdles. We need to focus on understanding the daily workflow challenges of ops managers instead of reverting) Tj
+T* (to old designs.  ) Tj
+T* () Tj
+T* (Aishwarya Naresh Reganti: Users need a product that supports their efficiency, and if the redesign has) Tj
+T* (introduced friction, we must test the waters by restoring familiarity—it's about ensuring user confidence in their) Tj
+T* (daily tasks, not just structural issues.) Tj
+ET
+BT
+/F1 7.5 Tf
+8.625 TL
+0.541 0.541 0.478 rg
+0. Tc
+51.0236220472441033 22.6774015748030706 Td
+(Lenny's Board of Directors) Tj
+ET
+BT
+/F1 7.5 Tf
+8.625 TL
+0.541 0.541 0.478 rg
+0. Tc
+529.7019685039371097 22.6774015748030706 Td
+(3 / 5) Tj
+ET
+endstream
+endobj
+9 0 obj
+<</Type /Page
+/Parent 1 0 R
+/Resources 2 0 R
+/MediaBox [0 0 595.2799999999999727 841.8899999999999864]
+/Contents 10 0 R
+>>
+endobj
+10 0 obj
+<<
+/Length 3730
+>>
+stream
+0.4251968503937008 w
+1. 0.42 0.21 RG
+0.09 0.08 0.06 rg
+0. 841.8899999999999864 595.2755905511811534 -841.8897637795276978 re
+f
+1. 0.42 0.21 RG
+1.4173228346456694 w
+51.0236220472441033 756.8506299212598378 m
+51.0236220472441033 700.1577165354329964 l
+S
+BT
+/F3 9.5 Tf
+10.9249999999999989 TL
+0.961 0.961 0.941 rg
+0. Tc
+65.1968503937007995 745.5120472440944468 Td
+(The pattern I've seen across dozens of conversations is that product issues often stem from a misalignment) Tj
+T* (between user needs and perceived value, rather than surface-level changes like a UI redesign. The tension) Tj
+T* (you're experiencing—whether it's a product problem or seasonality—suggests a deeper inquiry into how well) Tj
+T* (your product actually solves the core operational pain points of your users. From my observations, the most) Tj
+T* (successful teams pivot from merely analyzing metrics to deeply understanding and adapting to the evolving) Tj
+T* (needs and workflows of their users, ensuring the product remains indispensable and valuable.) Tj
+ET
+BT
+/F2 7.5 Tf
+8.625 TL
+1. 0.42 0.208 rg
+2.2677165354330713 Tc
+65.1968503937007995 643.4648031496062686 Td
+(LENNY'S TAKE) Tj
+ET
+1. 0.42 0.21 RG
+0.4251968503937008 w
+/GS1 gs
+51.0236220472441033 623.6222834645668627 m
+544.2519685039370643 623.6222834645668627 l
+S
+/GS2 gs
+BT
+/F2 7.5 Tf
+8.625 TL
+1. 0.42 0.208 rg
+3.4015748031496065 Tc
+51.0236220472441033 603.7797637795274568 Td
+(SYNTHESIS) Tj
+ET
+BT
+/F2 7.5 Tf
+8.625 TL
+1. 0.42 0.208 rg
+3.4015748031496065 Tc
+51.0236220472441033 586.7718897637794271 Td
+(WHAT THE BOARD AGREES) Tj
+ET
+BT
+/F1 10 Tf
+11.5 TL
+0.961 0.961 0.941 rg
+0. Tc
+51.0236220472441033 569.7640157480313974 Td
+(The board unanimously agrees that the recent DAU stagnation is linked to the redesigned home screen. They) Tj
+T* (see the redesign as the catalyst, impacting user engagement and potentially masking deeper issues within the) Tj
+T* (product itself.) Tj
+ET
+BT
+/F2 7.5 Tf
+8.625 TL
+1. 0.42 0.208 rg
+3.4015748031496065 Tc
+51.0236220472441033 511.6537795275589815 Td
+(THE OPEN QUESTION) Tj
+ET
+BT
+/F1 10 Tf
+11.5 TL
+0.961 0.961 0.941 rg
+0. Tc
+51.0236220472441033 494.6459055118109518 Td
+(The unresolved tension lies between Albert Cheng and Aishwarya Naresh Reganti + Kiriti Badam. Albert) Tj
+T* (contends that the flat DAU is a symptom of a deeper structural issue, urging a transformative approach through) Tj
+T* (in-depth explorations of user workflow challenges. In contrast, Aishwarya and Kiriti strongly believe that the) Tj
+T* (main issue stems directly from the redesign – suggesting a simple rollback of the home screen for some users) Tj
+T* (to test if it restores engagement. The PM must decide whether to explore deeper product-market misalignments) Tj
+T* (or focus on immediately rectifying the user experience by restoring the previous home screen.) Tj
+ET
+BT
+/F2 7.5 Tf
+8.625 TL
+1. 0.42 0.208 rg
+3.4015748031496065 Tc
+51.0236220472441033 389.7640157480314542 Td
+(YOUR NEXT MOVE) Tj
+ET
+BT
+/F1 10 Tf
+11.5 TL
+0.961 0.961 0.941 rg
+0. Tc
+51.0236220472441033 372.7561417322834245 Td
+(The most crucial next action is to initiate a rollback of the redesigned home screen for a defined segment of) Tj
+T* (users by the end of the week. This decision is feasible and actionable, allowing the team to collect quick) Tj
+T* (feedback on whether returning to the familiar interface increases user engagement, or if deeper issues are) Tj
+T* (indeed at play. This move will provide immediate signals to help navigate further product decisions.) Tj
+ET
+BT
+/F1 7.5 Tf
+8.625 TL
+0.541 0.541 0.478 rg
+0. Tc
+51.0236220472441033 22.6774015748030706 Td
+(Lenny's Board of Directors) Tj
+ET
+BT
+/F1 7.5 Tf
+8.625 TL
+0.541 0.541 0.478 rg
+0. Tc
+529.7019685039371097 22.6774015748030706 Td
+(4 / 5) Tj
+ET
+endstream
+endobj
+11 0 obj
+<</Type /Page
+/Parent 1 0 R
+/Resources 2 0 R
+/MediaBox [0 0 595.2799999999999727 841.8899999999999864]
+/Contents 12 0 R
+>>
+endobj
+12 0 obj
+<<
+/Length 5588
+>>
+stream
+0.4251968503937008 w
+1. 0.42 0.21 RG
+0.09 0.08 0.06 rg
+0. 841.8899999999999864 595.2755905511811534 -841.8897637795276978 re
+f
+BT
+/F2 7.5 Tf
+8.625 TL
+1. 0.42 0.208 rg
+3.4015748031496065 Tc
+51.0236220472441033 756.8506299212598378 Td
+(PICK YOUR MOVE — THREE PATHS FORWARD) Tj
+ET
+0.24 0.12 0.04 rg
+1. 0.42 0.21 RG
+1.4173228346456694 w
+59.5275590551181182 742.6774015748030706 m
+535.7480314960630494 742.6774015748030706 l
+540.4446262190335801 742.6774015748030706 544.2519685039370643 738.8700592898995865 544.2519685039370643 734.1734645669290558 c
+544.2519685039370643 626.4569291338582389 l
+544.2519685039370643 621.7603344108877081 539.5553737809665336 617.952992125984224 535.7480314960630494 617.952992125984224 c
+59.5275590551181182 617.952992125984224 l
+54.8309643321475875 617.952992125984224 51.0236220472441033 622.6495868489547547 51.0236220472441033 626.4569291338582389 c
+51.0236220472441033 734.1734645669290558 l
+51.0236220472441033 738.8700592898995865 55.7202167702146269 742.6774015748030706 59.5275590551181182 742.6774015748030706 c
+h
+B
+BT
+/F2 7 Tf
+8.0499999999999989 TL
+1. 0.42 0.208 rg
+0. Tc
+481.3226771653543778 725.6695275590550409 Td
+('     C H O S E N   P A T H) Tj
+ET
+BT
+/F2 11 Tf
+12.6499999999999986 TL
+1. 0.42 0.208 rg
+0. Tc
+65.1968503937007995 722.8348818897637784 Td
+(Deep User Engagement) Tj
+ET
+BT
+/F1 9.5 Tf
+10.9249999999999989 TL
+0.961 0.961 0.941 rg
+0. Tc
+65.1968503937007995 705.8270078740157487 Td
+(Launch an initiative to conduct intimate support sessions and shadow a subset of key users over a week to identify operational pain) Tj
+T* (points and transform the product.) Tj
+ET
+BT
+/F3 9 Tf
+10.3499999999999996 TL
+0.541 0.541 0.478 rg
+0. Tc
+65.1968503937007995 666.1419685039369369 Td
+(Why this works: This approach allows for a deeper understanding of the daily challenges faced by mid-market ops managers,) Tj
+T* (potentially uncovering structural product-market misalignments that are more significant than UI issues.) Tj
+ET
+BT
+/F1 8 Tf
+9.1999999999999993 TL
+1. 0.42 0.208 rg
+0. Tc
+65.1968503937007995 623.6222834645668627 Td
+(Backed by Albert Cheng) Tj
+ET
+0.13 0.11 0.08 rg
+59.5275590551181182 600.9451181102361943 m
+535.7480314960630494 600.9451181102361943 l
+540.4446262190335801 600.9451181102361943 544.2519685039370643 597.1377758253325965 544.2519685039370643 592.4411811023621794 c
+544.2519685039370643 484.7246456692912489 l
+544.2519685039370643 480.028050946320775 539.5553737809665336 476.220708661417234 535.7480314960630494 476.220708661417234 c
+59.5275590551181182 476.220708661417234 l
+54.8309643321475875 476.220708661417234 51.0236220472441033 480.9173033843877647 51.0236220472441033 484.7246456692912489 c
+51.0236220472441033 592.4411811023621794 l
+51.0236220472441033 597.1377758253325965 55.7202167702146269 600.9451181102361943 59.5275590551181182 600.9451181102361943 c
+h
+f
+BT
+/F2 11 Tf
+12.6499999999999986 TL
+0.961 0.961 0.941 rg
+0. Tc
+65.1968503937007995 581.1025984251967884 Td
+(Usability Audit and Redesign Fix) Tj
+ET
+BT
+/F1 9.5 Tf
+10.9249999999999989 TL
+0.961 0.961 0.941 rg
+0. Tc
+65.1968503937007995 564.0947244094487587 Td
+(Conduct a comprehensive usability audit of the redesigned home screen to identify disruptions in user flow and adjust the design to) Tj
+T* (better align with user workflows.) Tj
+ET
+BT
+/F3 9 Tf
+10.3499999999999996 TL
+0.541 0.541 0.478 rg
+0. Tc
+65.1968503937007995 524.4096850393700606 Td
+(Why this works: By addressing the possible usability issues introduced by the redesign, we can ensure that the product aligns with) Tj
+T* (users' needs, enhancing perceived value and possibly boosting engagement.) Tj
+ET
+BT
+/F1 8 Tf
+9.1999999999999993 TL
+1. 0.42 0.208 rg
+0. Tc
+65.1968503937007995 481.8899999999999295 Td
+(Backed by Elena Verna 4.0) Tj
+ET
+0.13 0.11 0.08 rg
+59.5275590551181182 459.2128346456692043 m
+535.7480314960630494 459.2128346456692043 l
+540.4446262190335801 459.2128346456692043 544.2519685039370643 455.4054923607657202 544.2519685039370643 450.7088976377951894 c
+544.2519685039370643 358.5829133858267141 l
+544.2519685039370643 353.8863186628561834 539.5553737809665336 350.0789763779526993 535.7480314960630494 350.0789763779526993 c
+59.5275590551181182 350.0789763779526993 l
+54.8309643321475875 350.0789763779526993 51.0236220472441033 354.7755711009231732 51.0236220472441033 358.5829133858267141 c
+51.0236220472441033 450.7088976377951894 l
+51.0236220472441033 455.4054923607657202 55.7202167702146269 459.2128346456692043 59.5275590551181182 459.2128346456692043 c
+h
+f
+BT
+/F2 11 Tf
+12.6499999999999986 TL
+0.961 0.961 0.941 rg
+0. Tc
+65.1968503937007995 439.3703149606298552 Td
+(Rollback Test for Engagement) Tj
+ET
+BT
+/F1 9.5 Tf
+10.9249999999999989 TL
+0.961 0.961 0.941 rg
+0. Tc
+65.1968503937007995 422.3624409448818255 Td
+(Rollback the redesigned home screen for a specific user segment to test if a return to the familiar layout improves their engagement.) Tj
+ET
+BT
+/F3 9 Tf
+10.3499999999999996 TL
+0.541 0.541 0.478 rg
+0. Tc
+65.1968503937007995 398.2679527559054691 Td
+(Why this works: This immediate and practical test can quickly determine if the design change is the main cause of DAU stagnation,) Tj
+T* (enabling swift action to restore user confidence and engagement.) Tj
+ET
+BT
+/F1 8 Tf
+9.1999999999999993 TL
+1. 0.42 0.208 rg
+0. Tc
+65.1968503937007995 355.7482677165353948 Td
+(Backed by Aishwarya Naresh Reganti + Kiriti Badam) Tj
+ET
+BT
+/F1 7.5 Tf
+8.625 TL
+0.541 0.541 0.478 rg
+0. Tc
+51.0236220472441033 22.6774015748030706 Td
+(Lenny's Board of Directors) Tj
+ET
+BT
+/F1 7.5 Tf
+8.625 TL
+0.541 0.541 0.478 rg
+0. Tc
+529.7019685039371097 22.6774015748030706 Td
+(5 / 5) Tj
+ET
+endstream
+endobj
+1 0 obj
+<</Type /Pages
+/Kids [3 0 R 5 0 R 7 0 R 9 0 R 11 0 R ]
+/Count 5
+>>
+endobj
+13 0 obj
+<<
+/Type /Font
+/BaseFont /Helvetica
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+14 0 obj
+<<
+/Type /Font
+/BaseFont /Helvetica-Bold
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+15 0 obj
+<<
+/Type /Font
+/BaseFont /Helvetica-Oblique
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+16 0 obj
+<<
+/Type /Font
+/BaseFont /Helvetica-BoldOblique
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+17 0 obj
+<<
+/Type /Font
+/BaseFont /Courier
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+18 0 obj
+<<
+/Type /Font
+/BaseFont /Courier-Bold
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+19 0 obj
+<<
+/Type /Font
+/BaseFont /Courier-Oblique
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+20 0 obj
+<<
+/Type /Font
+/BaseFont /Courier-BoldOblique
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+21 0 obj
+<<
+/Type /Font
+/BaseFont /Times-Roman
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+22 0 obj
+<<
+/Type /Font
+/BaseFont /Times-Bold
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+23 0 obj
+<<
+/Type /Font
+/BaseFont /Times-Italic
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+24 0 obj
+<<
+/Type /Font
+/BaseFont /Times-BoldItalic
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+25 0 obj
+<<
+/Type /Font
+/BaseFont /ZapfDingbats
+/Subtype /Type1
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+26 0 obj
+<<
+/Type /Font
+/BaseFont /Symbol
+/Subtype /Type1
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+27 0 obj
+<<
+/ca 0.2
+>>
+endobj
+28 0 obj
+<<
+/ca 1.
+>>
+endobj
+2 0 obj
+<<
+/ProcSet [/PDF /Text /ImageB /ImageC /ImageI]
+/Font <<
+/F1 13 0 R
+/F2 14 0 R
+/F3 15 0 R
+/F4 16 0 R
+/F5 17 0 R
+/F6 18 0 R
+/F7 19 0 R
+/F8 20 0 R
+/F9 21 0 R
+/F10 22 0 R
+/F11 23 0 R
+/F12 24 0 R
+/F13 25 0 R
+/F14 26 0 R
+>>
+/ExtGState <<
+/GS1 27 0 R
+/GS2 28 0 R
+>>
+/XObject <<
+>>
+>>
+endobj
+29 0 obj
+<<
+/Producer (jsPDF 4.2.1)
+/CreationDate (D:20260526022202+05'30')
+>>
+endobj
+30 0 obj
+<<
+/Type /Catalog
+/Pages 1 0 R
+/OpenAction [3 0 R /FitH null]
+/PageLayout /OneColumn
+>>
+endobj
+xref
+0 31
+0000000000 65535 f 
+0000026712 00000 n 
+0000028618 00000 n 
+0000000015 00000 n 
+0000000152 00000 n 
+0000005169 00000 n 
+0000005306 00000 n 
+0000010552 00000 n 
+0000010689 00000 n 
+0000017011 00000 n 
+0000017149 00000 n 
+0000020932 00000 n 
+0000021071 00000 n 
+0000026794 00000 n 
+0000026920 00000 n 
+0000027051 00000 n 
+0000027185 00000 n 
+0000027323 00000 n 
+0000027447 00000 n 
+0000027576 00000 n 
+0000027708 00000 n 
+0000027844 00000 n 
+0000027972 00000 n 
+0000028099 00000 n 
+0000028228 00000 n 
+0000028361 00000 n 
+0000028463 00000 n 
+0000028559 00000 n 
+0000028589 00000 n 
+0000028912 00000 n 
+0000028998 00000 n 
+trailer
+<<
+/Size 31
+/Root 30 0 R
+/Info 29 0 R
+/ID [ <71E8B8D7743D5465A7B6E937445DC53E> <71E8B8D7743D5465A7B6E937445DC53E> ]
+>>
+startxref
+29102
+%%EOF
