@@ -98,25 +98,30 @@ async def assemble(body: ProblemRequest):
         # 4. Generate all 5 responses in parallel
         responses = board.generate_all_responses(board_members, body.problem)
 
-        # 5-9: Debate + Lenny insight in parallel, then synthesis with clash names for consistency
+        # Step 5: Debate + Lenny insight in parallel
         with concurrent.futures.ThreadPoolExecutor(max_workers=2) as executor:
             future_debate = executor.submit(board.generate_debate, board_members, responses)
             future_lenny = executor.submit(board.generate_lenny_insight, body.problem, board_members, responses, chunks)
             debate_result = future_debate.result()
             lenny_insight = future_lenny.result()
 
-        # Synthesis runs after debate so it knows which two members clashed
-        synthesis_raw = board.generate_synthesis(body.problem, board_members, responses, debate_result["clash"])
+        # Step 6: Synthesis (needs clash names) + Pick Your Move (independent) — run in parallel
+        def _synthesis():
+            raw = board.generate_synthesis(body.problem, board_members, responses, debate_result["clash"])
+            paragraphs = [p.strip() for p in raw.strip().split("\n\n") if p.strip()]
+            return {
+                "agrees": paragraphs[0] if len(paragraphs) > 0 else raw,
+                "tension": paragraphs[1] if len(paragraphs) > 1 else "",
+                "next_move": paragraphs[2] if len(paragraphs) > 2 else "",
+            }
 
-        # Parse synthesis: model returns 3 paragraphs separated by blank lines
-        paragraphs = [p.strip() for p in synthesis_raw.strip().split("\n\n") if p.strip()]
-        synthesis = {
-            "agrees": paragraphs[0] if len(paragraphs) > 0 else synthesis_raw,
-            "tension": paragraphs[1] if len(paragraphs) > 1 else "",
-            "next_move": paragraphs[2] if len(paragraphs) > 2 else "",
-        }
+        with concurrent.futures.ThreadPoolExecutor(max_workers=2) as executor:
+            future_synthesis = executor.submit(_synthesis)
+            future_pick = executor.submit(board.generate_pick_your_move, body.problem, board_members, responses)
+            synthesis = future_synthesis.result()
+            pick_your_move = future_pick.result()
 
-        # 7. Build board list with guest titles for the frontend
+        # Build board list with guest titles for the frontend
         result_board = []
         for member, response in zip(board_members, responses):
             result_board.append({
@@ -127,9 +132,6 @@ async def assemble(body: ProblemRequest):
                 "episode_title": member.get("title", ""),
                 "date": member.get("date", ""),
             })
-
-        # 8. Pick your move (needs synthesis, runs after parallel block)
-        pick_your_move = board.generate_pick_your_move(body.problem, board_members, responses, synthesis)
 
         return {
             "board": result_board,

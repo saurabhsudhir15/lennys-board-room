@@ -428,7 +428,7 @@ def generate_lenny_insight(problem: str, board_members: list, responses: list, c
 
 
 
-def generate_pick_your_move(problem: str, board_members: list, responses: list, synthesis: dict) -> list:
+def generate_pick_your_move(problem: str, board_members: list, responses: list) -> list:
     import json as _json
     client = get_openai()
     pairs = [
@@ -456,8 +456,8 @@ def generate_pick_your_move(problem: str, board_members: list, responses: list, 
                 "content": (
                     f"PM's problem: {problem}\n\n"
                     f"Board responses:\n{_json.dumps(pairs, indent=2)}\n\n"
-                    f"Key tension the board did not resolve: {synthesis.get('tension', '')}\n\n"
-                    "Generate 3 moves that reflect genuinely different strategic bets from the board. "
+                    "Identify the sharpest unresolved tension in the board's responses, then generate 3 moves "
+                    "that reflect genuinely different strategic bets. "
                     "One should be the bold structural move. One should be the execution-first move. "
                     "One should be the reframe move."
                 )
