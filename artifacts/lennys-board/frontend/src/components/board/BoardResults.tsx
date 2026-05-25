@@ -135,6 +135,7 @@ export function BoardResults({ data, onReset }: { data: BoardResponse; onReset: 
 function ReviewBoardLink({ onClick }: { onClick: () => void }) {
   return (
     <button
+            type="button"
       onClick={onClick}
       className="mb-4 text-left text-[13px] transition-colors"
       style={{ background: "transparent", border: "none", color: "#8A8A7A", padding: 0 }}
@@ -239,6 +240,7 @@ function BoardPlayer({ data, onComplete }: { data: BoardResponse; onComplete: ()
       <div className="mb-8 flex w-full items-center justify-center gap-3">
         {data.board.map((_, i) => (
           <button
+            type="button"
             key={i}
             onClick={() => goTo(i, i > index ? 1 : -1)}
             aria-label={`Go to member ${i + 1}`}
@@ -318,6 +320,7 @@ function BoardPlayer({ data, onComplete }: { data: BoardResponse; onComplete: ()
         {/* controls */}
         <div className="mt-5 flex items-center justify-center gap-8">
           <button
+            type="button"
             onClick={() => goTo(index - 1, -1)}
             disabled={index === 0}
             className="flex items-center gap-1.5 text-[13px] transition-colors disabled:opacity-30"
@@ -329,6 +332,7 @@ function BoardPlayer({ data, onComplete }: { data: BoardResponse; onComplete: ()
           </button>
 
           <button
+            type="button"
             onClick={togglePlay}
             aria-label={playing ? "Pause" : "Play"}
             className="flex h-10 w-10 items-center justify-center rounded-full transition-colors"
@@ -338,6 +342,7 @@ function BoardPlayer({ data, onComplete }: { data: BoardResponse; onComplete: ()
           </button>
 
           <button
+            type="button"
             onClick={() => goTo(index + 1, 1)}
             className="flex items-center gap-1.5 text-[13px] transition-colors"
             style={{ color: "#8A8A7A" }}
@@ -491,6 +496,7 @@ function DebateView({
       <div className="mt-12 h-12">
         {showButton && (
           <button
+            type="button"
             onClick={onContinue}
             className="fade-in rounded-full px-7 py-3 text-[14px] font-medium transition-all hover:scale-[1.02]"
             style={{
@@ -581,6 +587,7 @@ function SynthesisView({
       {onPickMove && (
         <div className="mt-10 flex justify-center fade-in" style={{ animationDelay: "2400ms" }}>
           <button
+            type="button"
             onClick={onPickMove}
             className="rounded-full px-7 py-3 transition-transform hover:scale-[1.02]"
             style={{
@@ -599,6 +606,7 @@ function SynthesisView({
       {/* Sources accordion */}
       <div className="mt-12 fade-in" style={{ animationDelay: "2400ms" }}>
         <button
+            type="button"
           onClick={() => setSourcesOpen((v) => !v)}
           className="flex w-full items-center gap-2 py-3 text-left text-[14px]"
           style={{ color: "#8A8A7A" }}
@@ -628,6 +636,7 @@ function SynthesisView({
       {isDebug && (
       <div className="mt-2 fade-in" style={{ animationDelay: "2400ms" }}>
         <button
+            type="button"
           onClick={() => setStatsOpen((v) => !v)}
           className="flex w-full items-center gap-2 py-3 text-left text-[14px]"
           style={{ color: "#8A8A7A" }}
@@ -794,6 +803,7 @@ function PickYourMoveScreen({
 
       <div className="mt-12 flex flex-col items-center gap-4">
         <button
+            type="button"
           onClick={() => window.print()}
           className="rounded-full px-7 py-3 transition-transform hover:scale-[1.02]"
           style={{
@@ -809,6 +819,7 @@ function PickYourMoveScreen({
           Download Board Brief
         </button>
         <button
+            type="button"
           onClick={onReset}
           className="rounded-full px-7 py-3 transition-transform hover:scale-[1.02]"
           style={{
@@ -824,6 +835,7 @@ function PickYourMoveScreen({
         </button>
         <div className="text-[13px]" style={{ color: "#8A8A7A" }}>
           <button
+            type="button"
             onClick={onBack}
             className="transition-colors"
             style={{ background: "transparent", border: "none", color: "inherit", padding: 0, cursor: "pointer" }}
@@ -834,6 +846,7 @@ function PickYourMoveScreen({
           </button>
           <span className="mx-2">·</span>
           <button
+            type="button"
             onClick={onReviewBoard}
             className="transition-colors"
             style={{ background: "transparent", border: "none", color: "inherit", padding: 0, cursor: "pointer" }}

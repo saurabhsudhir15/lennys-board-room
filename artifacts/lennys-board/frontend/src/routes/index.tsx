@@ -81,6 +81,7 @@ function Index() {
         >
           The board is taking longer than usual.{" "}
           <button
+            type="button"
             onClick={submit}
             className="font-semibold underline"
             style={{ color: "var(--ember)" }}
@@ -153,6 +154,7 @@ function Index() {
 
         <div className="mt-8 flex justify-center">
           <button
+            type="button"
             onClick={submit}
             disabled={!problem.trim()}
             className="px-8 py-3.5 text-[17px] font-semibold transition-all hover:scale-[1.02] hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:scale-100"

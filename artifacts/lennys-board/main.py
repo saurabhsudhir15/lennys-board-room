@@ -63,12 +63,19 @@ class ProblemRequest(BaseModel):
 async def health():
     return {"status": "ok"}
 
-# Replit's preview proxy probes this WebSocket on every page load.
-# Accept and close cleanly so the proxy doesn't crash the preview pane.
+# Replit's preview proxy opens this WebSocket expecting Streamlit protocol.
+# Accept and hold the connection open until the client disconnects —
+# closing immediately causes the preview wrapper to crash on page interactions.
 @app.websocket("/_stcore/stream")
 async def stcore_stream_noop(websocket: WebSocket):
     await websocket.accept()
-    await websocket.close()
+    try:
+        while True:
+            msg = await websocket.receive()
+            if msg.get("type") == "websocket.disconnect":
+                break
+    except Exception:
+        pass
 
 @app.post("/assemble")
 async def assemble(body: ProblemRequest):
