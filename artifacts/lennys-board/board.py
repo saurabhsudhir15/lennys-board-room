@@ -21,7 +21,7 @@ def get_supabase():
     if _supabase_client is None:
         _supabase_client = create_client(
             os.environ["SUPABASE_URL"],
-            os.environ["SUPABASE_KEY"]
+            os.environ["SUPABASE_SECRET_KEY"]
         )
     return _supabase_client
 
@@ -91,15 +91,16 @@ def retrieve_chunks(search_queries: list) -> list:
     all_chunks = []
     for query in search_queries:
         embedding = _embed(query)
+        vec_str = "[" + ",".join(str(x) for x in embedding) + "]"
         try:
             result = sb.rpc("match_chunks", {
-                "query_embedding": embedding,
+                "query_embedding": vec_str,
                 "match_count": 10
             }).execute()
             if result.data:
                 all_chunks.extend(result.data)
-        except Exception:
-            pass
+        except Exception as e:
+            print(f"retrieve_chunks error for '{query[:50]}': {e}")
 
     seen_guests = {}
     for chunk in all_chunks:
@@ -116,8 +117,12 @@ def select_board(problem: str, chunks: list) -> list:
     import json
     client = get_openai()
 
+    EXCLUDE_FROM_BOARD = {"Lenny Rachitsky"}
+
     guest_summaries = []
     for c in chunks:
+        if c.get("guest_name", "") in EXCLUDE_FROM_BOARD:
+            continue
         guest_summaries.append({
             "guest_name": c.get("guest_name", ""),
             "title": c.get("title", ""),
@@ -157,14 +162,14 @@ def select_board(problem: str, chunks: list) -> list:
     raw = json.loads(response.choices[0].message.content)
     board = []
     if isinstance(raw, list):
-              board = raw                                                                                                                                                                                                     
+        board = raw
     elif isinstance(raw, dict):
-              for key in ["board", "members", "advisors", "board_members"]:                                                                                                                                                   
-                  if key in raw and isinstance(raw[key], list):
-                      board = raw[key]
-                      break                                                                                                                                                                                                   
-              if not board:
-                  board = next((v for v in raw.values() if isinstance(v, list)), [])                                                                                                                                          
+        for key in ["board", "members", "advisors", "board_members"]:
+            if key in raw and isinstance(raw[key], list):
+                board = raw[key]
+                break
+        if not board:
+            board = next((v for v in raw.values() if isinstance(v, list)), [])
 
     board = [m for m in board if isinstance(m, dict) and "guest_name" in m and "role" in m and len(m.get("chunk_content", "")) > 50]
 
@@ -187,7 +192,28 @@ def select_board(problem: str, chunks: list) -> list:
                 existing_names.add(fallback)
                 existing_roles.add(role)
 
-    return board[:5]
+    # Deduplicate by guest_name — replace any duplicate with next unused chunk
+    seen_names = {}
+    deduped = []
+    for member in board:
+        name = member["guest_name"]
+        if name not in seen_names:
+            seen_names[name] = True
+            deduped.append(member)
+        else:
+            for chunk in chunks:
+                chunk_name = chunk.get("guest_name", "")
+                if chunk_name and chunk_name not in seen_names:
+                    member_copy = dict(member)
+                    member_copy["guest_name"] = chunk_name
+                    member_copy["chunk_content"] = chunk.get("content", "")[:300]
+                    member_copy["title"] = chunk.get("title", "")
+                    member_copy["date"] = chunk.get("date", "")
+                    deduped.append(member_copy)
+                    seen_names[chunk_name] = True
+                    break
+
+    return deduped[:5]
 
 
 def generate_board_response(guest_name: str, role: str, role_description: str, chunk: str, problem: str) -> str:
@@ -200,8 +226,9 @@ def generate_board_response(guest_name: str, role: str, role_description: str, c
                 "content": (
                     f"You are {guest_name}, speaking from your experience as a product leader "
                     f"and your appearances on Lenny's Podcast. Your board role is {role}: {role_description}. "
-                    f"Speak in your authentic voice. Be direct, specific, reference your actual frameworks. "
-                    f"You have a distinct point of view — you do not need to agree with others."
+                    f"Speak in your authentic voice. Reference your actual frameworks and specific experiences."
+                    f"You disagree when your perspective demands it — agreement is not your job."
+                    f"The PM brought a hard problem; give them a hard answer."
                 )
             },
             {
@@ -211,6 +238,9 @@ def generate_board_response(guest_name: str, role: str, role_description: str, c
                     f"The most relevant insights from your conversations with Lenny:\n{chunk}\n\n"
                     f"You must reference at least one specific idea, framework, or phrase from the transcript above. "
                     f"Do not invent opinions not present in the excerpt.\n\n"
+                    f"Your analytical lens must be distinctly yours — rooted in your specific background and the transcript above. "
+                    f"Do not reach for frameworks any PM would use (user interviews, cohort analysis, OKRs, Jobs to Be Done). "
+                    f"If another board member could give the same advice, it is not sharp enough.\n\n"
                     f"Give your board perspective in 150-180 words. Lead with your sharpest insight. "
                     f"Be opinionated. End with one specific action."
                 )
@@ -240,34 +270,59 @@ def generate_all_responses(board_members: list, problem: str) -> list:
     return responses
 
 
-def generate_debate(board_members: list, responses: list) -> str:
-    import json
-    client = get_openai()
+def _extract_debaters(debate_text: str, board_members: list) -> tuple:
+    first_line = debate_text.split('\n')[0]
+    if ' to ' in first_line:
+        parts = first_line.split(' to ', 1)
+        name1 = parts[0].strip()
+        name2 = parts[1].split(':')[0].strip()
+        return name1, name2
+    return board_members[0]['guest_name'], board_members[1]['guest_name']
 
-    pairs = []
-    for i, m in enumerate(board_members):
-        pairs.append({"guest": m["guest_name"], "role": m["role"], "response": responses[i]})
+
+def generate_debate(board_members, responses):
+    client = get_openai()
+    board_summary = "\n\n".join([
+        f"{m['guest_name']} ({m['role']}): {r}"
+        for m, r in zip(board_members, responses)
+    ])
+    lines = [
+        "Five product advisors have just given their perspectives on a PM problem:",
+        "",
+        board_summary,
+        "",
+        "Find the two advisors whose recommendations are most directly incompatible - not just different emphasis, but genuinely conflicting calls to action.",
+        "",
+        (
+            "Write a direct verbal exchange in exactly this structure:\n"
+            "FIRST_ADVISOR_NAME to SECOND_ADVISOR_NAME: First advisor directly challenges "
+            "what the second advisor specifically recommended. 2-3 sentences. "
+            "Name what they said. Explain why it is the wrong call for this specific situation.\n"
+            "SECOND_ADVISOR_NAME: Second advisor holds their ground or sharpens their position. "
+            "1-2 sentences."
+        ),
+        "",
+        "Rules:",
+        "- Use their real names from the responses above",
+        "- First-person direct speech only. No narration. Do not write X thinks that Y...",
+        "- Reference what the other person actually said, not their role in general",
+        "- No softening. No I see your point but... This is a real debate",
+        "- Exactly 2 lines. Nothing else.",
+    ]
+    prompt = "\n".join(lines)
 
     response = client.chat.completions.create(
         model=config.BOARD_MEMBER_MODEL,
-        messages=[
-            {
-                "role": "system",
-                "content": (
-                    "You are a skilled facilitator. Identify the two most philosophically opposed board members "
-                    "based on their perspectives. Write 2-3 sentences capturing the core tension between them.\n"
-                    "Format: '[Guest A] pushes back on [Guest B]: [2-3 sentence tension description]'"
-                )
-            },
-            {
-                "role": "user",
-                "content": f"Board responses:\n{json.dumps(pairs, indent=2)}"
-            }
-        ]
+        messages=[{"role": "user", "content": prompt}],
+        max_tokens=300,
+        temperature=0.7,
     )
-    usage = response.usage
-    log_call("generate_debate", config.BOARD_MEMBER_MODEL, usage.prompt_tokens, usage.completion_tokens)
-    return response.choices[0].message.content
+    result = response.choices[0].message.content.strip()
+    log_call("generate_debate", config.BOARD_MEMBER_MODEL,
+             response.usage.prompt_tokens, response.usage.completion_tokens)
+
+    debater1, debater2 = _extract_debaters(result, board_members)
+    return {"text": result, "clash": [debater1, debater2]}
 
 
 def generate_synthesis(problem: str, board_members: list, responses: list) -> str:
@@ -285,11 +340,15 @@ def generate_synthesis(problem: str, board_members: list, responses: list) -> st
                 "role": "system",
                 "content": (
                     "You are synthesizing advice from a 5-person advisory board for a PM. "
-                    "Write exactly 3 paragraphs with these labels:\n"
-                    "**What the board agrees on:** [paragraph]\n"
-                    "**The open question:** [paragraph — the key tension they did not resolve, which the PM must decide]\n"
-                    "**Your next move:** [paragraph — the single most important next action]\n"
-                    "Be specific, decisive, and direct."
+                    "Write exactly 3 plain paragraphs separated by blank lines.\n\n"
+                    "Paragraph 1: What the board agrees on. One clear sentence. No hedging.\n\n"
+                    "Paragraph 2: The sharpest unresolved tension. Name the two members whose advice is most directly incompatible."
+                    "State their positions explicitly. Do not soften it. "
+                    "The PM cannot do both - they must choose one.\n\n"
+                    "Paragraph 3: the single most important next action. \n"
+                    "Not a research plan. A decision, a bet, or a cut. "
+                    "Something that would actually change the trajectory this week.\n\n"
+                    "No bold text, no labels, no headers, no bullet points. Plain paragraphs only."
                 )
             },
             {
@@ -304,3 +363,100 @@ def generate_synthesis(problem: str, board_members: list, responses: list) -> st
     usage = response.usage
     log_call("generate_synthesis", config.SYNTHESIS_MODEL, usage.prompt_tokens, usage.completion_tokens)
     return response.choices[0].message.content
+
+
+def generate_lenny_insight(problem: str, board_members: list, responses: list, chunks: list) -> str:
+    import json
+    client = get_openai()
+
+    board_summary = "\n\n".join([
+        f"{m['guest_name']} ({m['role']}): {r}"
+        for m, r in zip(board_members, responses)
+    ])
+
+    chunk_excerpts = "\n\n".join([
+        f"[{c.get('guest_name', '')} — {c.get('title', '')}]\n{c.get('content', '')[:400]}"
+        for c in chunks[:8]
+    ])
+
+    response = client.chat.completions.create(
+        model=config.SYNTHESIS_MODEL,
+        messages=[
+            {
+                "role": "system",
+                "content": (
+                    "You are Lenny Rachitsky — you have spent 7 years interviewing the best product minds in the world. "
+                    "You have now watched 5 of your past guests debate a PM's problem. "
+                    "Your job is to give the one insight that none of them could give individually — "
+                    "the pattern you have seen play out across dozens of these conversations. "
+                    "Draw from what YOU said, asked, or observed in the transcript excerpts below, "
+                    "and from your newsletter writing. Not what the guests said — what YOU noticed.\n\n"
+                    "Rules:\n"
+                    "- 2-3 sentences only\n"
+                    "- Speak in first person as Lenny\n"
+                    "- Name the pattern explicitly — do not hint at it\n"
+                    "- Reference the specific tension the board just surfaced\n"
+                    "- No flattery, no throat-clearing, no 'great discussion'"
+                )
+            },
+            {
+                "role": "user",
+                "content": (
+                    f"The PM's problem: {problem}\n\n"
+                    f"What the board just said:\n{board_summary}\n\n"
+                    f"Excerpts from your conversations and newsletters:\n{chunk_excerpts}"
+                )
+            }
+        ],
+        max_tokens=150,
+        temperature=0.7,
+    )
+    usage = response.usage
+    log_call("lenny_insight", config.SYNTHESIS_MODEL, usage.prompt_tokens, usage.completion_tokens)
+    return response.choices[0].message.content.strip()
+
+
+
+
+def generate_pick_your_move(problem: str, board_members: list, responses: list, synthesis: dict) -> list:
+    import json as _json
+    client = get_openai()
+    pairs = [
+        {"guest": m["guest_name"], "role": m["role"], "response": responses[i]}
+        for i, m in enumerate(board_members)
+    ]
+    response = client.chat.completions.create(
+        model=config.SYNTHESIS_MODEL,
+        messages=[
+            {
+                "role": "system",
+                "content": (
+                    "You are generating 3 distinct action options for a PM based on their board's advice. "
+                    "Each option must be a genuinely different bet - not variations of the same approach. "
+                    'Return valid JSON only: {"moves": [<3 objects>]}. '
+                    "Each object must have: "
+                    "title (2-4 words, the name of the move), "
+                    "action (what to actually do, 1-2 sentences), "
+                    "reasoning (why this is the right bet for this situation, 1-2 sentences), "
+                    "backed_by (the board member whose thinking drives this option, first name + last name only)."
+                )
+            },
+            {
+                "role": "user",
+                "content": (
+                    f"PM's problem: {problem}\n\n"
+                    f"Board responses:\n{_json.dumps(pairs, indent=2)}\n\n"
+                    f"Key tension the board did not resolve: {synthesis.get('tension', '')}\n\n"
+                    "Generate 3 moves that reflect genuinely different strategic bets from the board. "
+                    "One should be the bold structural move. One should be the execution-first move. "
+                    "One should be the reframe move."
+                )
+            }
+        ],
+        response_format={"type": "json_object"},
+    )
+    log_call("pick_your_move", config.SYNTHESIS_MODEL,
+             response.usage.prompt_tokens, response.usage.completion_tokens)
+    data = _json.loads(response.choices[0].message.content)
+    moves = data.get("moves", [])
+    return moves[:3]

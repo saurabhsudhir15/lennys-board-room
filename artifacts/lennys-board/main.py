@@ -1,6 +1,7 @@
 """FastAPI entry point — replaces Streamlit app.py for the React frontend."""
 from contextvars import ContextVar
 from types import ModuleType
+import concurrent.futures
 import sys
 import traceback
 
@@ -15,10 +16,10 @@ _call_log_var: ContextVar[list] = ContextVar("call_log", default=[])
 class _FakeState:
     def __contains__(self, key):
         return key == "call_log"
-        def __getitem__(self, key):
-            if key == "call_log":
-                return _call_log_var.get()
-            raise KeyError(key)
+    def __getitem__(self, key):
+        if key == "call_log":
+             return _call_log_var.get()
+        raise KeyError(key)
     def __setitem__(self, key, value):
         if key == "call_log":
             _call_log_var.set(value)
@@ -40,7 +41,10 @@ import config  # noqa: E402
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 from pydantic import BaseModel
+import os
 
 app = FastAPI(title="Lenny's Board of Directors")
 
@@ -56,6 +60,8 @@ class ProblemRequest(BaseModel):
     problem: str
 
 
+
+
 @app.get("/health")
 async def health():
     return {"status": "ok"}
@@ -66,7 +72,7 @@ async def stcore_health():
 
 @app.get("/_stcore/host-config")
 async def stcore_host_config():
-    return {} 
+    return {}
 
 @app.post("/assemble")
 async def assemble(body: ProblemRequest):
@@ -89,11 +95,15 @@ async def assemble(body: ProblemRequest):
         # 4. Generate all 5 responses in parallel
         responses = board.generate_all_responses(board_members, body.problem)
 
-        # 5. Generate the debate between most opposed members
-        debate = board.generate_debate(board_members, responses)
+        # 5-6-9: Debate, synthesis, Lenny insight — all independent, run in parallel
+        with concurrent.futures.ThreadPoolExecutor(max_workers=3) as executor:
+            future_debate = executor.submit(board.generate_debate, board_members, responses)
+            future_synthesis_raw = executor.submit(board.generate_synthesis, body.problem, board_members, responses)
+            future_lenny = executor.submit(board.generate_lenny_insight, body.problem, board_members, responses, chunks)
 
-        # 6. Generate synthesis
-        synthesis_raw = board.generate_synthesis(body.problem, board_members, responses)
+            debate_result = future_debate.result()
+            synthesis_raw = future_synthesis_raw.result()
+            lenny_insight = future_lenny.result()
 
         # Parse synthesis: model returns 3 paragraphs separated by blank lines
         paragraphs = [p.strip() for p in synthesis_raw.strip().split("\n\n") if p.strip()]
@@ -108,21 +118,38 @@ async def assemble(body: ProblemRequest):
         for member, response in zip(board_members, responses):
             result_board.append({
                 "guest_name": member["guest_name"],
-                "guest_title": config.GUEST_TITLES.get(
-                    member["guest_name"], "Product Leader, Lenny's Podcast"
-                ),
+                "guest_title": "Lenny's Podcast",
                 "role": member["role"],
                 "response": response,
                 "episode_title": member.get("title", ""),
                 "date": member.get("date", ""),
             })
 
+        # 8. Pick your move (needs synthesis, runs after parallel block)
+        pick_your_move = board.generate_pick_your_move(body.problem, board_members, responses, synthesis)
+
         return {
             "board": result_board,
-            "debate": debate,
+            "debate": debate_result["text"],
+            "debate_clash": debate_result["clash"],
             "synthesis": synthesis,
+            "pick_your_move": pick_your_move,
+            "lenny_insight": lenny_insight,
             "call_log": _call_log_var.get(),
         }
 
     except Exception as exc:
         raise HTTPException(status_code=500, detail=traceback.format_exc())
+
+
+# ---------------------------------------------------------------------------
+# Serve React frontend — must come AFTER all API routes
+# ---------------------------------------------------------------------------
+DIST_DIR = "frontend/dist/client"
+
+if os.path.exists(DIST_DIR):
+    app.mount("/assets", StaticFiles(directory=f"{DIST_DIR}/assets"), name="assets")
+
+    @app.get("/{full_path:path}")
+    async def serve_react(full_path: str):
+        return FileResponse(f"{DIST_DIR}/index.html")
