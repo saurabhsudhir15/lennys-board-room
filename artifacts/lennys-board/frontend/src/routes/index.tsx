@@ -5,21 +5,6 @@ import { BoardResults } from "@/components/board/BoardResults";
 import type { BoardResponse } from "@/components/board/types";
 
 export const Route = createFileRoute("/")({
-  head: () => ({
-    meta: [
-      { title: "Lenny's Board of Directors" },
-      {
-        name: "description",
-        content:
-          "Bring your toughest product problem. Five advisors from Lenny's podcast will debate it and deliver a synthesis.",
-      },
-      { property: "og:title", content: "Lenny's Board of Directors" },
-      {
-        property: "og:description",
-        content: "Five advisors from Lenny's podcast debate your toughest product problem.",
-      },
-    ],
-  }),
   component: Index,
 });
 
