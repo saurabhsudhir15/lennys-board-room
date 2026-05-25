@@ -98,15 +98,15 @@ async def assemble(body: ProblemRequest):
         # 4. Generate all 5 responses in parallel
         responses = board.generate_all_responses(board_members, body.problem)
 
-        # 5-6-9: Debate, synthesis, Lenny insight — all independent, run in parallel
-        with concurrent.futures.ThreadPoolExecutor(max_workers=3) as executor:
+        # 5-9: Debate + Lenny insight in parallel, then synthesis with clash names for consistency
+        with concurrent.futures.ThreadPoolExecutor(max_workers=2) as executor:
             future_debate = executor.submit(board.generate_debate, board_members, responses)
-            future_synthesis_raw = executor.submit(board.generate_synthesis, body.problem, board_members, responses)
             future_lenny = executor.submit(board.generate_lenny_insight, body.problem, board_members, responses, chunks)
-
             debate_result = future_debate.result()
-            synthesis_raw = future_synthesis_raw.result()
             lenny_insight = future_lenny.result()
+
+        # Synthesis runs after debate so it knows which two members clashed
+        synthesis_raw = board.generate_synthesis(body.problem, board_members, responses, debate_result["clash"])
 
         # Parse synthesis: model returns 3 paragraphs separated by blank lines
         paragraphs = [p.strip() for p in synthesis_raw.strip().split("\n\n") if p.strip()]

@@ -325,13 +325,22 @@ def generate_debate(board_members, responses):
     return {"text": result, "clash": [debater1, debater2]}
 
 
-def generate_synthesis(problem: str, board_members: list, responses: list) -> str:
+def generate_synthesis(problem: str, board_members: list, responses: list, clash_names: list = None) -> str:
     import json
     client = get_openai()
 
     pairs = []
     for i, m in enumerate(board_members):
         pairs.append({"guest": m["guest_name"], "role": m["role"], "response": responses[i]})
+
+    clash_instruction = ""
+    if clash_names and len(clash_names) >= 2:
+        clash_instruction = (
+            f"The live debate already surfaced the sharpest conflict: it is between "
+            f"{clash_names[0]} and {clash_names[1]}. "
+            f"Paragraph 2 must describe the tension between exactly these two people — "
+            f"name them, state their incompatible positions, and make clear the PM must choose one.\n\n"
+        )
 
     response = client.chat.completions.create(
         model=config.SYNTHESIS_MODEL,
@@ -342,10 +351,11 @@ def generate_synthesis(problem: str, board_members: list, responses: list) -> st
                     "You are synthesizing advice from a 5-person advisory board for a PM. "
                     "Write exactly 3 plain paragraphs separated by blank lines.\n\n"
                     "Paragraph 1: What the board agrees on. One clear sentence. No hedging.\n\n"
-                    "Paragraph 2: The sharpest unresolved tension. Name the two members whose advice is most directly incompatible."
-                    "State their positions explicitly. Do not soften it. "
-                    "The PM cannot do both - they must choose one.\n\n"
-                    "Paragraph 3: the single most important next action. \n"
+                    f"{clash_instruction}"
+                    "Paragraph 2: The sharpest unresolved tension. "
+                    "State the two conflicting positions explicitly. Do not soften it. "
+                    "The PM cannot do both — they must choose one.\n\n"
+                    "Paragraph 3: The single most important next action. "
                     "Not a research plan. A decision, a bet, or a cut. "
                     "Something that would actually change the trajectory this week.\n\n"
                     "No bold text, no labels, no headers, no bullet points. Plain paragraphs only."

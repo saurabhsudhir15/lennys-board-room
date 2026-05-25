@@ -414,8 +414,9 @@ function DebateView({
     return () => clearTimeout(t);
   }, []);
 
-  const a = data.board[0];
-  const b = data.board[1] ?? data.board[0];
+  const clash = data.debate_clash ?? [];
+  const a = data.board.find((m) => m.guest_name === clash[0]) ?? data.board[0];
+  const b = data.board.find((m) => m.guest_name === clash[1]) ?? data.board[1] ?? data.board[0];
 
   return (
     <div className="mx-auto flex min-h-[88vh] w-full max-w-3xl flex-col px-6 py-16">
