@@ -39,7 +39,7 @@ sys.modules.setdefault("streamlit", _FakeST("streamlit"))
 import board  # noqa: E402
 import config  # noqa: E402
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, WebSocket
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
@@ -48,7 +48,6 @@ import os
 
 app = FastAPI(title="Lenny's Board of Directors")
 
-# Allow all origins — the Lovable frontend can be on any domain
 app.add_middleware(CORSMiddleware,
     allow_origins=["*"],
     allow_methods=["POST", "GET", "OPTIONS"],
@@ -60,19 +59,16 @@ class ProblemRequest(BaseModel):
     problem: str
 
 
-
-
 @app.get("/health")
 async def health():
     return {"status": "ok"}
 
-@app.get("/_stcore/health")
-async def stcore_health():
-    return {"status": "ok"}
-
-@app.get("/_stcore/host-config")
-async def stcore_host_config():
-    return {}
+# Replit's preview proxy probes this WebSocket on every page load.
+# Accept and close cleanly so the proxy doesn't crash the preview pane.
+@app.websocket("/_stcore/stream")
+async def stcore_stream_noop(websocket: WebSocket):
+    await websocket.accept()
+    await websocket.close()
 
 @app.post("/assemble")
 async def assemble(body: ProblemRequest):
