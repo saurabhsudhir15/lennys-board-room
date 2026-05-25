@@ -132,9 +132,10 @@ function Index() {
           onBlur={(e) => (e.currentTarget.style.borderColor = "rgba(255,107,53,0.2)")}
         />
 
-        <div className="mt-4 flex flex-wrap gap-2">
+        <div className="mt-4 flex flex-wrap justify-center gap-2">
           {EXAMPLES.map((ex) => (
             <button
+              type="button"
               key={ex}
               onClick={() => setProblem(ex)}
               className="px-3.5 py-1.5 text-[12px] transition-colors hover:bg-[rgba(255,107,53,0.14)]"
