@@ -10,7 +10,7 @@ const MESSAGES = [
 
 const STEP_MS = 4500;
 
-export function CampfireLoading() {
+export function CampfireLoading({ problem }: { problem?: string }) {
   const [idx, setIdx] = useState(0);
   const [elapsed, setElapsed] = useState(0);
 
@@ -27,7 +27,6 @@ export function CampfireLoading() {
     return () => clearInterval(t);
   }, []);
 
-  // progress: smooth across all steps, caps at ~96% so it never looks "done" before data lands
   const total = MESSAGES.length * STEP_MS;
   const progress = Math.min(96, (elapsed / total) * 100);
 
@@ -45,9 +44,8 @@ export function CampfireLoading() {
         }}
       />
 
-      {/* Orbiting embers around a glowing core */}
+      {/* Orbiting embers */}
       <div className="relative mb-14 h-40 w-40">
-        {/* Core */}
         <div
           className="absolute left-1/2 top-1/2 h-16 w-16 -translate-x-1/2 -translate-y-1/2 rounded-full"
           style={{
@@ -58,7 +56,6 @@ export function CampfireLoading() {
             animation: "core-flicker 1.8s ease-in-out infinite",
           }}
         />
-        {/* Rotating orbit rings */}
         {[
           { size: 110, dur: "6s", dir: 1, dot: 5, color: "#FF6B35" },
           { size: 140, dur: "9s", dir: -1, dot: 4, color: "#F59E0B" },
@@ -94,7 +91,6 @@ export function CampfireLoading() {
         ))}
       </div>
 
-      {/* Eyebrow */}
       <p
         className="mb-5 text-[11px] font-medium uppercase fade-in"
         style={{ color: "var(--ember)", letterSpacing: "2.4px" }}
@@ -102,7 +98,6 @@ export function CampfireLoading() {
         The board is gathering
       </p>
 
-      {/* Cycling message */}
       <div className="relative h-9 w-full text-center">
         {MESSAGES.map((m, i) => (
           <p
@@ -121,7 +116,15 @@ export function CampfireLoading() {
         ))}
       </div>
 
-      {/* Step dots */}
+      {problem && (
+        <p
+          className="mt-8 max-w-md text-center text-[13px] italic fade-in"
+          style={{ color: "#6B6B5C", lineHeight: 1.6 }}
+        >
+          "{problem.length > 120 ? problem.slice(0, 117) + "…" : problem}"
+        </p>
+      )}
+
       <div className="mt-10 flex items-center gap-2.5">
         {MESSAGES.map((_, i) => {
           const active = i === idx;
@@ -146,7 +149,6 @@ export function CampfireLoading() {
         })}
       </div>
 
-      {/* Slim progress bar */}
       <div
         className="mt-8 h-[2px] w-full max-w-sm overflow-hidden rounded-full"
         style={{ background: "rgba(245,245,240,0.06)" }}

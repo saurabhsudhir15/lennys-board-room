@@ -12,6 +12,7 @@ import {
   Zap,
 } from "lucide-react";
 import type { BoardResponse, PickYourMove } from "./types";
+import { generateBoardPdf } from "./generateBoardPdf";
 import avatarChallenger from "@/assets/avatar-challenger.png";
 import avatarOperator from "@/assets/avatar-operator.png";
 import avatarVisionary from "@/assets/avatar-visionary.png";
@@ -95,7 +96,7 @@ function hexToRgba(hex: string, alpha: number) {
 type Stage = "player" | "debate" | "synthesis" | "pick";
 const DURATION_MS = 12000;
 
-export function BoardResults({ data, onReset }: { data: BoardResponse; onReset: () => void }) {
+export function BoardResults({ data, onReset, problem }: { data: BoardResponse; onReset: () => void; problem: string }) {
   const [stage, setStage] = useState<Stage>("player");
 
   const reviewBoard = () => setStage("player");
@@ -114,6 +115,8 @@ export function BoardResults({ data, onReset }: { data: BoardResponse; onReset: 
     return (
       <PickYourMoveScreen
         moves={data.pick_your_move}
+        data={data}
+        problem={problem}
         onBack={() => setStage("synthesis")}
         onReviewBoard={reviewBoard}
         onReset={onReset}
@@ -234,7 +237,7 @@ function BoardPlayer({ data, onComplete }: { data: BoardResponse; onComplete: ()
   return (
     <div
       className="mx-auto flex w-full max-w-3xl flex-col items-center px-6 pt-8 pb-6"
-      style={{ height: "100vh", overflow: "hidden" }}
+      style={{ minHeight: "100vh" }}
     >
       {/* progress dots */}
       <div className="mb-8 flex w-full items-center justify-center gap-3">
@@ -286,8 +289,6 @@ function BoardPlayer({ data, onComplete }: { data: BoardResponse; onComplete: ()
             className="response-fade w-full board-response-scroll"
             style={{
               maxWidth: 680,
-              maxHeight: "42vh",
-              overflowY: "auto",
               background: "rgba(255,107,53,0.04)",
               border: "1px solid rgba(255,107,53,0.12)",
               borderRadius: 18,
@@ -696,16 +697,26 @@ function SynthesisView({
 
 function PickYourMoveScreen({
   moves,
+  data,
+  problem,
   onBack,
   onReviewBoard,
   onReset,
 }: {
   moves: PickYourMove[];
+  data: BoardResponse;
+  problem: string;
   onBack: () => void;
   onReviewBoard: () => void;
   onReset: () => void;
 }) {
   const [selected, setSelected] = useState<number | null>(null);
+  const [chosen, setChosen] = useState<number | null>(null);
+
+  function handleChoose(i: number) {
+    setChosen(i);
+    generateBoardPdf(problem, data, moves[i]);
+  }
 
   return (
     <div className="mx-auto w-full max-w-3xl px-6 pb-24 pt-16">
@@ -726,35 +737,55 @@ function PickYourMoveScreen({
       <div className="mx-auto flex flex-col gap-4" style={{ maxWidth: 680 }}>
         {moves.map((m, i) => {
           const isSelected = selected === i;
+          const isChosen = chosen === i;
+          const isDimmed = chosen !== null && chosen !== i;
+
           return (
             <div
               key={i}
-              onClick={() => setSelected(isSelected ? null : i)}
-              className="fade-in-up cursor-pointer"
+              onClick={() => chosen === null && setSelected(isSelected ? null : i)}
+              className="fade-in-up"
               style={{
                 animationDelay: `${i * 150}ms`,
-                background: "rgba(255,107,53,0.04)",
-                border: isSelected
+                background: isChosen
+                  ? "rgba(255,107,53,0.10)"
+                  : "rgba(255,107,53,0.04)",
+                border: isChosen
                   ? "1px solid #FF6B35"
-                  : "1px solid rgba(255,107,53,0.12)",
+                  : isSelected
+                    ? "1px solid rgba(255,107,53,0.5)"
+                    : "1px solid rgba(255,107,53,0.12)",
                 borderRadius: 18,
                 padding: "28px 32px",
-                boxShadow: isSelected ? "0 0 20px rgba(255,107,53,0.2)" : "none",
-                transition: "border-color 0.2s, box-shadow 0.2s, transform 0.2s",
+                boxShadow: isChosen
+                  ? "0 0 28px rgba(255,107,53,0.25)"
+                  : isSelected
+                    ? "0 0 12px rgba(255,107,53,0.1)"
+                    : "none",
+                transition: "all 0.3s ease",
+                opacity: isDimmed ? 0.28 : 1,
+                cursor: chosen !== null ? "default" : "pointer",
               }}
               onMouseEnter={(e) => {
-                if (!isSelected) {
-                  e.currentTarget.style.borderColor = "rgba(255,107,53,0.35)";
-                }
+                if (chosen !== null) return;
+                if (!isSelected) e.currentTarget.style.borderColor = "rgba(255,107,53,0.35)";
                 e.currentTarget.style.transform = "scale(1.01)";
               }}
               onMouseLeave={(e) => {
-                if (!isSelected) {
-                  e.currentTarget.style.borderColor = "rgba(255,107,53,0.12)";
-                }
+                if (chosen !== null) return;
+                if (!isSelected) e.currentTarget.style.borderColor = "rgba(255,107,53,0.12)";
                 e.currentTarget.style.transform = "scale(1)";
               }}
             >
+              {isChosen && (
+                <p
+                  className="mb-3 text-[10px] font-bold uppercase"
+                  style={{ color: "#FF6B35", letterSpacing: "1.5px" }}
+                >
+                  ✓ Chosen path — board brief downloading…
+                </p>
+              )}
+
               <h4 className="text-[18px] font-bold" style={{ color: "#F5F5F0" }}>
                 {m.title}
               </h4>
@@ -764,7 +795,8 @@ function PickYourMoveScreen({
               >
                 {m.action}
               </p>
-              {isSelected && (
+
+              {(isSelected || isChosen) && (
                 <>
                   <p
                     className="mt-3 text-[14px] italic"
@@ -785,15 +817,39 @@ function PickYourMoveScreen({
                         animation: "fade-in 400ms ease-out 200ms forwards",
                       }}
                     >
-                      <span style={{ color: "#F59E0B" }}>What you're giving up:</span> {m.tradeoff}
+                      <span style={{ color: "#F59E0B" }}>What you're giving up:</span>{" "}
+                      {m.tradeoff}
                     </p>
+                  )}
+
+                  {!isChosen && (
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleChoose(i);
+                      }}
+                      className="mt-5 transition-all hover:scale-[1.03] hover:brightness-110"
+                      style={{
+                        background: "#FF6B35",
+                        color: "#000",
+                        fontSize: 14,
+                        fontWeight: 600,
+                        borderRadius: 980,
+                        padding: "10px 24px",
+                        border: "none",
+                        cursor: "pointer",
+                        opacity: 0,
+                        animation: "fade-in 400ms ease-out 350ms forwards",
+                      }}
+                    >
+                      Choose this path →
+                    </button>
                   )}
                 </>
               )}
-              <p
-                className="mt-3 text-[12px]"
-                style={{ color: "#FF6B35" }}
-              >
+
+              <p className="mt-4 text-[12px]" style={{ color: "#FF6B35" }}>
                 Backed by {m.backed_by}
               </p>
             </div>
@@ -802,24 +858,26 @@ function PickYourMoveScreen({
       </div>
 
       <div className="mt-12 flex flex-col items-center gap-4">
-        <button
+        {chosen !== null && (
+          <button
             type="button"
-          onClick={() => window.print()}
-          className="rounded-full px-7 py-3 transition-transform hover:scale-[1.02]"
-          style={{
-            background: "transparent",
-            border: "1px solid rgba(255,107,53,0.4)",
-            color: "#F5F5F0",
-            fontSize: 15,
-            fontWeight: 500,
-            borderRadius: 980,
-            cursor: "pointer",
-          }}
-        >
-          Download Board Brief
-        </button>
+            onClick={() => generateBoardPdf(problem, data, moves[chosen])}
+            className="rounded-full px-7 py-3 transition-transform hover:scale-[1.02]"
+            style={{
+              background: "transparent",
+              border: "1px solid rgba(255,107,53,0.4)",
+              color: "#F5F5F0",
+              fontSize: 15,
+              fontWeight: 500,
+              borderRadius: 980,
+              cursor: "pointer",
+            }}
+          >
+            Re-download Board Brief
+          </button>
+        )}
         <button
-            type="button"
+          type="button"
           onClick={onReset}
           className="rounded-full px-7 py-3 transition-transform hover:scale-[1.02]"
           style={{
