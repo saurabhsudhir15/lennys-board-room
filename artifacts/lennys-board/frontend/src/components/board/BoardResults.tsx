@@ -4,6 +4,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Cog,
+  Download,
   Eye,
   Pause,
   Play,
@@ -823,30 +824,49 @@ function PickYourMoveScreen({
                     </p>
                   )}
 
-                  {!isChosen && (
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleChoose(i);
-                      }}
-                      className="mt-5 transition-all hover:scale-[1.03] hover:brightness-110"
-                      style={{
-                        background: "#FF6B35",
-                        color: "#000",
-                        fontSize: 14,
-                        fontWeight: 600,
-                        borderRadius: 980,
-                        padding: "10px 24px",
-                        border: "none",
-                        cursor: "pointer",
-                        opacity: 0,
-                        animation: "fade-in 400ms ease-out 350ms forwards",
-                      }}
-                    >
-                      Choose this path →
-                    </button>
-                  )}
+                  <div
+                    className="mt-4 flex items-center justify-between"
+                    style={{ opacity: 0, animation: "fade-in 400ms ease-out 350ms forwards" }}
+                  >
+                    <span />
+                    {isChosen ? (
+                      <button
+                        type="button"
+                        onClick={(e) => { e.stopPropagation(); generateBoardPdf(problem, data, moves[i]); }}
+                        className="flex items-center gap-1.5 transition-opacity hover:opacity-80"
+                        style={{
+                          background: "transparent",
+                          border: "none",
+                          color: "rgba(255,107,53,0.7)",
+                          fontSize: 12,
+                          fontWeight: 500,
+                          cursor: "pointer",
+                          padding: 0,
+                        }}
+                      >
+                        <Download size={12} />
+                        Re-download brief
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={(e) => { e.stopPropagation(); handleChoose(i); }}
+                        className="transition-all hover:opacity-80"
+                        style={{
+                          background: "transparent",
+                          border: "1px solid rgba(255,107,53,0.45)",
+                          color: "#FF6B35",
+                          fontSize: 11,
+                          fontWeight: 500,
+                          borderRadius: 980,
+                          padding: "5px 12px",
+                          cursor: "pointer",
+                        }}
+                      >
+                        Choose this path →
+                      </button>
+                    )}
+                  </div>
                 </>
               )}
 
@@ -859,24 +879,6 @@ function PickYourMoveScreen({
       </div>
 
       <div className="mt-12 flex flex-col items-center gap-4">
-        {chosen !== null && (
-          <button
-            type="button"
-            onClick={() => generateBoardPdf(problem, data, moves[chosen])}
-            className="rounded-full px-7 py-3 transition-transform hover:scale-[1.02]"
-            style={{
-              background: "transparent",
-              border: "1px solid rgba(255,107,53,0.4)",
-              color: "#F5F5F0",
-              fontSize: 15,
-              fontWeight: 500,
-              borderRadius: 980,
-              cursor: "pointer",
-            }}
-          >
-            Re-download Board Brief
-          </button>
-        )}
         <button
           type="button"
           onClick={onReset}
