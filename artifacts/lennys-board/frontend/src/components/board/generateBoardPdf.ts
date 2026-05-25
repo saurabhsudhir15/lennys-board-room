@@ -1,329 +1,295 @@
 import jsPDF from "jspdf";
 import type { BoardResponse, PickYourMove } from "./types";
 
-const BG: [number, number, number] = [22, 20, 15];
-const EMBER: [number, number, number] = [255, 107, 53];
-const TEXT: [number, number, number] = [245, 245, 240];
-const MUTED: [number, number, number] = [138, 138, 122];
-const CARD: [number, number, number] = [36, 30, 22];
-const CHOSEN_BG: [number, number, number] = [55, 28, 8];
-const AMBER: [number, number, number] = [245, 158, 11];
+/* ─── Palette ─────────────────────────────────────────────────────────────── */
+const C = {
+  bg:       [22,  20,  15]  as [number, number, number],
+  surface:  [34,  28,  20]  as [number, number, number],
+  ember:    [255, 107, 53]  as [number, number, number],
+  amber:    [245, 158, 11]  as [number, number, number],
+  text:     [245, 245, 240] as [number, number, number],
+  muted:    [138, 138, 122] as [number, number, number],
+  chosen:   [52,  26,  8]   as [number, number, number],
+};
 
-const PAGE_W = 210;
-const PAGE_H = 297;
-const M = 18;
-const CW = PAGE_W - M * 2;
-const BOTTOM_SAFE = 272;
+/* ─── Page geometry ────────────────────────────────────────────────────────── */
+const PW   = 210;   // page width  (mm)
+const PH   = 297;   // page height (mm)
+const ML   = 18;    // left margin
+const MR   = 18;    // right margin
+const CW   = PW - ML - MR;   // content width
+const SAFE = 276;   // y-safe zone before new page
 
-function fillPage(doc: jsPDF) {
-  doc.setFillColor(...BG);
-  doc.rect(0, 0, PAGE_W, PAGE_H, "F");
+/* ─── Helpers ──────────────────────────────────────────────────────────────── */
+
+function bgFill(doc: jsPDF) {
+  doc.setFillColor(...C.bg);
+  doc.rect(0, 0, PW, PH, "F");
 }
 
-function addPage(doc: jsPDF): number {
+function newPage(doc: jsPDF): number {
   doc.addPage();
-  fillPage(doc);
-  return M + 10;
+  bgFill(doc);
+  return ML + 10;
 }
 
-function checkSpace(doc: jsPDF, y: number, needed: number): number {
-  return y + needed > BOTTOM_SAFE ? addPage(doc) : y;
+function guard(doc: jsPDF, y: number, need: number): number {
+  return y + need > SAFE ? newPage(doc) : y;
 }
 
-function resetText(doc: jsPDF) {
-  doc.setCharSpace(0);
-}
-
-function sectionLabel(doc: jsPDF, text: string, y: number): number {
-  resetText(doc);
-  doc.setFontSize(7.5);
-  doc.setFont("helvetica", "bold");
-  doc.setTextColor(...EMBER);
-  doc.setCharSpace(1.8);
-  doc.text(text.toUpperCase(), M, y);
-  resetText(doc);
-  return y + 7;
-}
-
+/** Thin ember rule */
 function rule(doc: jsPDF, y: number): number {
-  doc.setDrawColor(255, 107, 53);
-  doc.setLineWidth(0.2);
+  doc.setDrawColor(...C.ember);
+  doc.setLineWidth(0.15);
   doc.saveGraphicsState();
-  (doc as any).setGState(new (doc as any).GState({ opacity: 0.18 }));
-  doc.line(M, y, PAGE_W - M, y);
+  (doc as any).setGState(new (doc as any).GState({ opacity: 0.2 }));
+  doc.line(ML, y, PW - MR, y);
   doc.restoreGraphicsState();
-  return y + 8;
+  return y + 6;
 }
 
-function bodyText(
+/** Section heading — no charSpace, no global side-effects */
+function heading(doc: jsPDF, label: string, y: number): number {
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(7);
+  doc.setTextColor(...C.ember);
+  doc.text(label.toUpperCase(), ML, y);
+  return y + 6;
+}
+
+/** Body paragraph — wraps and returns new y */
+function para(
   doc: jsPDF,
   text: string,
   y: number,
-  {
-    color = TEXT,
-    size = 10.5,
-    style = "normal",
-    maxW = CW,
-    lineH = 5.6,
-  }: {
-    color?: [number, number, number];
-    size?: number;
-    style?: string;
-    maxW?: number;
-    lineH?: number;
-  } = {}
+  opts: { size?: number; style?: string; color?: [number,number,number]; maxW?: number; lh?: number } = {}
 ): number {
-  resetText(doc);
-  doc.setFontSize(size);
+  const { size = 10, style = "normal", color = C.text, maxW = CW, lh = 5.4 } = opts;
   doc.setFont("helvetica", style);
+  doc.setFontSize(size);
   doc.setTextColor(...color);
   const lines = doc.splitTextToSize(text, maxW);
-  doc.text(lines, M, y);
-  return y + lines.length * lineH + 1.5;
+  doc.text(lines, ML, y);
+  return y + lines.length * lh + 1;
 }
+
+/* ─── Main export ──────────────────────────────────────────────────────────── */
 
 export function generateBoardPdf(
   problem: string,
   data: BoardResponse,
-  chosenMove: PickYourMove | null
+  chosenMove: PickYourMove | null,
 ) {
   const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
-  fillPage(doc);
+  bgFill(doc);
 
-  let y = M + 2;
+  let y = ML;
 
-  resetText(doc);
-  doc.setFontSize(26);
+  /* ── Cover header ── */
   doc.setFont("helvetica", "bold");
-  doc.setTextColor(...EMBER);
-  doc.text("Board Brief", M, y);
-  y += 5;
+  doc.setFontSize(28);
+  doc.setTextColor(...C.ember);
+  doc.text("Board Brief", ML, y + 10);
 
-  resetText(doc);
-  doc.setFontSize(8.5);
   doc.setFont("helvetica", "normal");
-  doc.setTextColor(...MUTED);
-  doc.text("Powered by Lenny's Podcast", M, y + 4);
-  y += 14;
+  doc.setFontSize(9);
+  doc.setTextColor(...C.muted);
+  doc.text("Powered by Lenny's Podcast", ML, y + 18);
+  y += 28;
 
   y = rule(doc, y);
 
-  y = sectionLabel(doc, "The Problem", y);
-
-  resetText(doc);
-  doc.setFontSize(12);
-  doc.setFont("helvetica", "italic");
-  doc.setTextColor(...TEXT);
-  const problemLines = doc.splitTextToSize(problem, CW);
-  doc.text(problemLines, M, y);
-  y += problemLines.length * 6.2 + 8;
+  /* ── Problem ── */
+  y = heading(doc, "The Problem", y);
+  y = para(doc, problem, y, { size: 11, style: "italic", lh: 5.8 });
+  y += 6;
 
   y = rule(doc, y);
-  y = sectionLabel(doc, "Your Board", y);
+
+  /* ── Board members ── */
+  y = heading(doc, "Your Board", y);
 
   for (const member of data.board) {
-    resetText(doc);
-    const roleW = 28;
-    const responseLines = doc.splitTextToSize(member.response, CW - 8);
-    const titleLines = doc.splitTextToSize(member.guest_title ?? "", CW - roleW - 12);
-    const cardH = 16 + titleLines.length * 4.5 + responseLines.length * 5.2 + 6;
-
-    y = checkSpace(doc, y, cardH + 5);
-
-    doc.setFillColor(...CARD);
-    doc.roundedRect(M, y - 2, CW, cardH, 3, 3, "F");
-
-    resetText(doc);
-    doc.setFontSize(7);
-    doc.setFont("helvetica", "bold");
-    doc.setTextColor(...EMBER);
-    doc.setCharSpace(1.2);
-    doc.text(member.role.toUpperCase(), M + 5, y + 5.5);
-    resetText(doc);
-
-    doc.setFontSize(11);
-    doc.setFont("helvetica", "bold");
-    doc.setTextColor(...TEXT);
-    const roleTextW = (doc.getStringUnitWidth(member.role.toUpperCase()) * 7 * 1.2) / doc.internal.scaleFactor;
-    doc.text(member.guest_name, M + 5 + roleTextW + 5, y + 5.5);
-
-    resetText(doc);
-    doc.setFontSize(8.5);
     doc.setFont("helvetica", "normal");
-    doc.setTextColor(...MUTED);
-    doc.text(titleLines, M + 5, y + 11.5);
-
-    resetText(doc);
     doc.setFontSize(9.5);
+
+    const responseLines = doc.splitTextToSize(member.response, CW - 8);
+    const cardH = 18 + responseLines.length * 5.2 + 6;
+
+    y = guard(doc, y, cardH + 5);
+
+    /* card background */
+    doc.setFillColor(...C.surface);
+    doc.roundedRect(ML, y - 2, CW, cardH, 2.5, 2.5, "F");
+
+    /* role (small, ember) */
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(7);
+    doc.setTextColor(...C.ember);
+    doc.text(member.role.toUpperCase(), ML + 5, y + 5.5);
+
+    /* name (medium, white) — on same line, offset after role */
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(10.5);
+    doc.setTextColor(...C.text);
+    const roleW = doc.getTextWidth(member.role.toUpperCase());
+    doc.text(member.guest_name, ML + 5 + roleW + 4, y + 5.5);
+
+    /* episode / source */
     doc.setFont("helvetica", "normal");
-    doc.setTextColor(...TEXT);
-    const responseY = y + 11.5 + titleLines.length * 4.5 + 3;
-    doc.text(responseLines, M + 5, responseY);
+    doc.setFontSize(8);
+    doc.setTextColor(...C.muted);
+    doc.text(member.episode_title || "Lenny's Podcast", ML + 5, y + 11.5);
+
+    /* response text */
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(9.5);
+    doc.setTextColor(...C.text);
+    doc.text(responseLines, ML + 5, y + 17);
 
     y += cardH + 6;
   }
 
-  y = checkSpace(doc, y, 35);
+  /* ── Debate ── */
+  y = guard(doc, y, 35);
   y = rule(doc, y);
-  y = sectionLabel(doc, "The Debate", y);
+  y = heading(doc, "The Debate", y);
+  y = para(doc, data.debate, y, { size: 10, style: "italic", lh: 5.6 });
+  y += 4;
 
-  resetText(doc);
-  doc.setFontSize(10.5);
-  doc.setFont("helvetica", "italic");
-  doc.setTextColor(...TEXT);
-  const debateLines = doc.splitTextToSize(data.debate, CW);
-  doc.text(debateLines, M, y);
-  y += debateLines.length * 5.6 + 8;
-
+  /* ── Lenny's Take ── */
   if (data.lenny_insight) {
-    y = checkSpace(doc, y, 30);
-    y = sectionLabel(doc, "Lenny's Take", y);
+    y = guard(doc, y, 30);
+    y = heading(doc, "Lenny's Take", y);
 
-    doc.setFillColor(32, 27, 22);
-    const insightLines = doc.splitTextToSize(data.lenny_insight, CW - 12);
-    const insightH = insightLines.length * 5.4 + 10;
-    doc.roundedRect(M, y - 3, CW, insightH, 3, 3, "F");
+    const insightLines = doc.splitTextToSize(data.lenny_insight, CW - 10);
+    const boxH = insightLines.length * 5.2 + 10;
 
-    doc.setDrawColor(...EMBER);
-    doc.setLineWidth(0.6);
-    doc.line(M, y - 3, M, y - 3 + insightH);
+    doc.setFillColor(...C.surface);
+    doc.roundedRect(ML, y - 2, CW, boxH, 2.5, 2.5, "F");
+    doc.setDrawColor(...C.ember);
+    doc.setLineWidth(0.5);
+    doc.line(ML, y - 2, ML, y - 2 + boxH);
 
-    resetText(doc);
-    doc.setFontSize(9.5);
     doc.setFont("helvetica", "italic");
-    doc.setTextColor(...TEXT);
-    doc.text(insightLines, M + 6, y + 2);
-    y += insightH + 8;
+    doc.setFontSize(9.5);
+    doc.setTextColor(...C.text);
+    doc.text(insightLines, ML + 6, y + 4);
+
+    y += boxH + 8;
   }
 
-  y = checkSpace(doc, y, 55);
+  /* ── Synthesis ── */
+  y = guard(doc, y, 50);
   y = rule(doc, y);
-  y = sectionLabel(doc, "Synthesis", y);
+  y = heading(doc, "Synthesis", y);
 
-  const synth = data.synthesis;
+  y = heading(doc, "What the board agrees", y);
+  y = para(doc, data.synthesis.agrees, y, { size: 10 });
+  y += 3;
 
-  y = sectionLabel(doc, "What the board agrees", y);
-  resetText(doc);
-  y = bodyText(doc, synth.agrees, y, { size: 10.5 });
-  y += 4;
+  y = guard(doc, y, 25);
+  y = heading(doc, "The open question", y);
+  y = para(doc, data.synthesis.tension, y, { size: 10 });
+  y += 3;
 
-  y = checkSpace(doc, y, 25);
-  y = sectionLabel(doc, "The open question", y);
-  resetText(doc);
-  y = bodyText(doc, synth.tension, y, { size: 10.5 });
-  y += 4;
+  y = guard(doc, y, 25);
+  y = heading(doc, "Your next move", y);
+  y = para(doc, data.synthesis.next_move, y, { size: 10 });
 
-  y = checkSpace(doc, y, 25);
-  y = sectionLabel(doc, "Your next move", y);
-  resetText(doc);
-  y = bodyText(doc, synth.next_move, y, { size: 10.5 });
-
+  /* ── Pick Your Move ── */
   if (data.pick_your_move && data.pick_your_move.length > 0) {
-    y = addPage(doc);
-
-    y = sectionLabel(doc, "Pick Your Move — Three Paths Forward", y);
+    y = newPage(doc);
+    y = heading(doc, "Pick Your Move — Three Paths Forward", y);
     y += 2;
 
-    for (let i = 0; i < data.pick_your_move.length; i++) {
-      const move = data.pick_your_move[i];
+    for (const move of data.pick_your_move) {
       const isChosen = chosenMove?.title === move.title;
 
-      resetText(doc);
-      const titleLines = doc.splitTextToSize(move.title, CW - 8);
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(10);
+
+      const titleLines  = doc.splitTextToSize(move.title, CW - 8);
       const actionLines = doc.splitTextToSize(move.action, CW - 8);
-      const reasonLabel = "Why this works:";
-      const reasonLines = doc.splitTextToSize(
-        `${reasonLabel} ${move.reasoning}`,
-        CW - 8
-      );
-      const tradeLines = move.tradeoff
-        ? doc.splitTextToSize(`What you're giving up: ${move.tradeoff}`, CW - 8)
+      const reasonText  = `Why this works: ${move.reasoning}`;
+      const reasonLines = doc.splitTextToSize(reasonText, CW - 8);
+      const tradeLines  = move.tradeoff
+        ? doc.splitTextToSize(`Tradeoff: ${move.tradeoff}`, CW - 8)
         : [];
 
-      const labelH = isChosen ? 8 : 0;
       const cardH =
-        labelH +
-        titleLines.length * 6.2 +
+        titleLines.length  * 6.2 +
         actionLines.length * 5.4 +
-        reasonLines.length * 5.4 +
-        tradeLines.length * 5.4 +
-        24;
+        reasonLines.length * 5.2 +
+        tradeLines.length  * 5.2 +
+        (tradeLines.length ? 3 : 0) +
+        20;
 
-      y = checkSpace(doc, y, cardH + 6);
+      y = guard(doc, y, cardH + 6);
 
+      /* card fill */
+      doc.setFillColor(...(isChosen ? C.chosen : C.surface));
       if (isChosen) {
-        doc.setFillColor(...CHOSEN_BG);
-        doc.setDrawColor(...EMBER);
-        doc.setLineWidth(0.5);
-        doc.roundedRect(M, y - 3, CW, cardH, 3, 3, "FD");
+        doc.setDrawColor(...C.ember);
+        doc.setLineWidth(0.4);
+        doc.roundedRect(ML, y - 2, CW, cardH, 2.5, 2.5, "FD");
       } else {
-        doc.setFillColor(...CARD);
-        doc.roundedRect(M, y - 3, CW, cardH, 3, 3, "F");
+        doc.roundedRect(ML, y - 2, CW, cardH, 2.5, 2.5, "F");
       }
 
-      let cy = y + 4;
+      let cy = y + 5;
 
-      if (isChosen) {
-        resetText(doc);
-        doc.setFontSize(7);
-        doc.setFont("helvetica", "bold");
-        doc.setTextColor(...EMBER);
-        doc.setCharSpace(1.2);
-        const chosenLabel = ">> CHOSEN PATH";
-        doc.text(chosenLabel, PAGE_W - M - doc.getTextWidth(chosenLabel) - 4, cy);
-        resetText(doc);
-        cy += 6;
-      }
-
-      resetText(doc);
-      doc.setFontSize(12);
+      /* title */
       doc.setFont("helvetica", "bold");
-      doc.setTextColor(isChosen ? EMBER[0] : TEXT[0], isChosen ? EMBER[1] : TEXT[1], isChosen ? EMBER[2] : TEXT[2]);
-      doc.text(titleLines, M + 5, cy);
-      cy += titleLines.length * 6.2 + 3;
+      doc.setFontSize(11.5);
+      doc.setTextColor(...(isChosen ? C.ember : C.text));
+      doc.text(titleLines, ML + 5, cy);
+      cy += titleLines.length * 6.2 + 2;
 
-      resetText(doc);
-      doc.setFontSize(10);
-      doc.setFont("helvetica", "normal");
-      doc.setTextColor(...TEXT);
-      doc.text(actionLines, M + 5, cy);
-      cy += actionLines.length * 5.4 + 4;
-
-      resetText(doc);
-      doc.setFontSize(9.5);
-      doc.setFont("helvetica", "italic");
-      doc.setTextColor(...MUTED);
-      doc.text(reasonLines, M + 5, cy);
-      cy += reasonLines.length * 5.4 + 3;
-
-      if (tradeLines.length > 0) {
-        resetText(doc);
-        doc.setFontSize(9.5);
-        doc.setFont("helvetica", "normal");
-        doc.setTextColor(...AMBER);
-        doc.text(tradeLines, M + 5, cy);
-        cy += tradeLines.length * 5.4 + 3;
+      /* chosen indicator — plain text, no badge */
+      if (isChosen) {
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(7.5);
+        doc.setTextColor(...C.ember);
+        doc.text("Recommended path", ML + 5, cy);
+        cy += 5;
       }
 
-      resetText(doc);
-      doc.setFontSize(8.5);
+      /* action */
       doc.setFont("helvetica", "normal");
-      doc.setTextColor(...EMBER);
-      doc.text(`Backed by ${move.backed_by}`, M + 5, y + cardH - 7);
+      doc.setFontSize(10);
+      doc.setTextColor(...C.text);
+      doc.text(actionLines, ML + 5, cy);
+      cy += actionLines.length * 5.4 + 3;
+
+      /* reasoning */
+      doc.setFont("helvetica", "italic");
+      doc.setFontSize(9);
+      doc.setTextColor(...C.muted);
+      doc.text(reasonLines, ML + 5, cy);
+      cy += reasonLines.length * 5.2 + (tradeLines.length ? 3 : 0);
+
+      /* tradeoff */
+      if (tradeLines.length > 0) {
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(9);
+        doc.setTextColor(...C.amber);
+        doc.text(tradeLines, ML + 5, cy);
+      }
 
       y += cardH + 7;
     }
   }
 
-  const pageCount = (doc as any).internal.getNumberOfPages();
-  for (let p = 1; p <= pageCount; p++) {
+  /* ── Footer on every page ── */
+  const total = (doc as any).internal.getNumberOfPages();
+  for (let p = 1; p <= total; p++) {
     doc.setPage(p);
-    resetText(doc);
-    doc.setFontSize(7.5);
     doc.setFont("helvetica", "normal");
-    doc.setTextColor(...MUTED);
-    doc.text("Lenny's Board of Directors", M, PAGE_H - 8);
-    doc.text(`${p} / ${pageCount}`, PAGE_W - M, PAGE_H - 8, { align: "right" });
+    doc.setFontSize(7.5);
+    doc.setTextColor(...C.muted);
+    doc.text("Lenny's Board of Directors", ML, PH - 8);
+    doc.text(`${p} / ${total}`, PW - MR, PH - 8, { align: "right" });
   }
 
   doc.save("board-brief.pdf");
