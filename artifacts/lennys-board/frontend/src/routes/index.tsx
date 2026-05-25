@@ -17,16 +17,16 @@ const EXAMPLES = [
 
 const CHIP_TEMPLATES: Record<string, string> = {
   "DAU flat for 3 months — can't find the cause":
-    "Our DAU has been flat for 3 months and I can't find the cause.\n\nContext: We're a [Series A / B / growth-stage] company with ~[X] MAU. Our core user is [describe]. The flatness started around [timeframe / after what event].\n\nWhat I've already tried: [e.g., cohort analysis, feature flags, user interviews]\n\nMain constraint: [time / engineering bandwidth / unclear signal]",
+    "Our DAU has been flat for 3 months and I can't find the cause. We're a [stage] company with ~[X] MAU. The flatness started around [timeframe]. I've tried cohort analysis and a quick user survey but the data isn't pointing anywhere obvious.",
 
   "CEO attached to 3 features I need to cut":
-    "My CEO is attached to features I need to cut from the roadmap.\n\nContext: The features are [describe them briefly]. My case for cutting: [your reasoning]. The CEO's attachment is driven by [what you believe motivates them — customer promise, pet project, etc.].\n\nWhat I've already tried: [e.g., data presentations, 1:1s, reframing]\n\nMain constraint: [political capital / upcoming board review / team morale]",
+    "My CEO is attached to [features] that I need to cut to stay focused. My case for cutting them is [reason], but every conversation hits a wall. I've tried [what you've tried] and I'm running out of runway to make the call.",
 
   "Enterprise or double down on SMB?":
-    "We're deciding whether to move upmarket into Enterprise or double down on SMB.\n\nContext: We're at ~[$X ARR] with roughly [X% SMB vs Y% mid-market] revenue split. Average contract is $[X]. We've had [Y] inbound Enterprise inquiries in the last quarter.\n\nWhat I've already tried: [discovery calls, pricing experiments, ICP analysis]\n\nMain constraint: [sales motion readiness / product gaps / team bandwidth]",
+    "We're at [ARR / stage] and deciding whether to move upmarket into Enterprise or double down on SMB. The tension is [what's pulling each direction]. We've had [X] inbound Enterprise inquiries but our product and sales motion are built for SMB.",
 
   "Engineering says 6 weeks will take 6 months":
-    "Engineering estimates 6 months for something I believe should take 6 weeks.\n\nContext: The feature is [describe it]. My estimate is based on [your reasoning]. Engineering's concerns seem to be [technical debt / hidden dependencies / scope creep].\n\nWhat I've already tried: [scoping sessions, bringing in tech lead, breaking it down]\n\nMain constraint: [hard customer deadline / competing priorities / trust gap]",
+    "Engineering is estimating 6 months for a feature I believe should take 6 weeks. The feature is [describe it]. I think the gap is due to [your hypothesis]. We have a [deadline / customer commitment] that makes this urgent.",
 };
 
 type State =
