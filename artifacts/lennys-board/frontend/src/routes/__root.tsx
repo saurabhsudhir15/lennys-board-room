@@ -72,18 +72,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
+      { title: "Lenny's Board of Directors" },
       { name: "description", content: "Get expert product advice from a virtual board of 5 advisors drawn from Lenny's podcast guests." },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
+      { property: "og:title", content: "Lenny's Board of Directors" },
       { property: "og:description", content: "Get expert product advice from a virtual board of 5 advisors drawn from Lenny's podcast guests." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
-      { name: "twitter:site", content: "@Lovable" },
-      { name: "twitter:title", content: "Lovable App" },
+      { name: "twitter:title", content: "Lenny's Board of Directors" },
       { name: "twitter:description", content: "Get expert product advice from a virtual board of 5 advisors drawn from Lenny's podcast guests." },
-      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/4326229f-29fc-4674-b541-3b1a3c0fcce6/id-preview-834d5925--89730f2b-dea3-4ea2-b1a7-6a2ec0f8c970.lovable.app-1778405571600.png" },
-      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/4326229f-29fc-4674-b541-3b1a3c0fcce6/id-preview-834d5925--89730f2b-dea3-4ea2-b1a7-6a2ec0f8c970.lovable.app-1778405571600.png" },
     ],
     links: [
       {
