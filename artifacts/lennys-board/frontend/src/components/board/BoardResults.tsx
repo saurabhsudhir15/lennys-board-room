@@ -99,40 +99,151 @@ const DURATION_MS = 12000;
 
 export function BoardResults({ data, onReset, problem }: { data: BoardResponse; onReset: () => void; problem: string }) {
   const [stage, setStage] = useState<Stage>("player");
+  const isDebug =
+    typeof window !== "undefined" &&
+    new URLSearchParams(window.location.search).get("debug") === "true";
 
   const reviewBoard = () => setStage("player");
 
-  if (stage === "player")
-    return <BoardPlayer data={data} onComplete={() => setStage("debate")} />;
-  if (stage === "debate")
+  function renderStage() {
+    if (stage === "player")
+      return <BoardPlayer data={data} onComplete={() => setStage("debate")} />;
+    if (stage === "debate")
+      return (
+        <DebateView
+          data={data}
+          onContinue={() => setStage("synthesis")}
+          onReviewBoard={reviewBoard}
+        />
+      );
+    if (stage === "pick" && data.pick_your_move)
+      return (
+        <PickYourMoveScreen
+          moves={data.pick_your_move}
+          data={data}
+          problem={problem}
+          onBack={() => setStage("synthesis")}
+          onReviewBoard={reviewBoard}
+          onReset={onReset}
+        />
+      );
     return (
-      <DebateView
+      <SynthesisView
         data={data}
-        onContinue={() => setStage("synthesis")}
         onReviewBoard={reviewBoard}
+        onPickMove={
+          data.pick_your_move && data.pick_your_move.length > 0
+            ? () => setStage("pick")
+            : undefined
+        }
       />
     );
-  if (stage === "pick" && data.pick_your_move)
-    return (
-      <PickYourMoveScreen
-        moves={data.pick_your_move}
-        data={data}
-        problem={problem}
-        onBack={() => setStage("synthesis")}
-        onReviewBoard={reviewBoard}
-        onReset={onReset}
-      />
-    );
+  }
+
   return (
-    <SynthesisView
-      data={data}
-      onReviewBoard={reviewBoard}
-      onPickMove={
-        data.pick_your_move && data.pick_your_move.length > 0
-          ? () => setStage("pick")
-          : undefined
-      }
-    />
+    <>
+      {renderStage()}
+      {isDebug && <DebugPanel data={data} />}
+    </>
+  );
+}
+
+function DebugPanel({ data }: { data: BoardResponse }) {
+  const [open, setOpen] = useState(false);
+  const totalCost = data.call_log.reduce((s, c) => s + (c.cost_usd || 0), 0);
+  const totalTokens = data.call_log.reduce((s, c) => s + c.input_tokens + c.output_tokens, 0);
+
+  return (
+    <div
+      style={{
+        position: "fixed",
+        bottom: 16,
+        right: 16,
+        zIndex: 9999,
+        background: "rgba(10,10,8,0.95)",
+        border: "1px solid rgba(255,107,53,0.35)",
+        borderRadius: 12,
+        boxShadow: "0 8px 32px rgba(0,0,0,0.5)",
+        minWidth: 220,
+        maxWidth: 420,
+        fontSize: 12,
+        fontFamily: "monospace",
+      }}
+    >
+      {/* Header pill */}
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        className="flex w-full items-center justify-between gap-4 px-4 py-2.5"
+        style={{ background: "transparent", border: "none", cursor: "pointer", color: "#F5F5F0" }}
+      >
+        <span style={{ color: "#FF6B35", fontWeight: 700 }}>⏱ debug</span>
+        <span style={{ color: "#8A8A7A" }}>
+          {data.timing ? `${data.timing.total_s}s` : "—"} · ${totalCost.toFixed(4)} · {totalTokens.toLocaleString()} tok
+        </span>
+        <ChevronDown size={12} style={{ color: "#8A8A7A", transform: open ? "rotate(0)" : "rotate(-90deg)", transition: "transform 0.2s" }} />
+      </button>
+
+      {open && (
+        <div style={{ borderTop: "1px solid rgba(255,107,53,0.15)", padding: "12px 16px 14px", display: "flex", flexDirection: "column", gap: 12 }}>
+
+          {/* Timing bars */}
+          {data.timing && (
+            <div>
+              <p style={{ color: "#8A8A7A", textTransform: "uppercase", letterSpacing: "1.2px", marginBottom: 6 }}>timing</p>
+              <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                {(
+                  [
+                    ["analyze",     data.timing.analyze_s],
+                    ["retrieve",    data.timing.retrieve_s],
+                    ["select",      data.timing.select_board_s],
+                    ["responses×5", data.timing.board_responses_s],
+                    ["debate+lenny",data.timing.debate_lenny_s],
+                    ["synth+pick",  data.timing.synthesis_pick_s],
+                  ] as [string, number][]
+                ).map(([label, secs]) => {
+                  const pct = Math.round((secs / data.timing!.total_s) * 100);
+                  return (
+                    <div key={label} style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                      <span style={{ width: 82, flexShrink: 0, color: "#8A8A7A" }}>{label}</span>
+                      <div style={{ flex: 1, height: 4, borderRadius: 2, background: "rgba(255,107,53,0.12)", overflow: "hidden" }}>
+                        <div style={{ width: `${pct}%`, height: "100%", borderRadius: 2, background: "rgba(255,107,53,0.6)" }} />
+                      </div>
+                      <span style={{ width: 32, textAlign: "right", color: "#F5F5F0" }}>{secs}s</span>
+                    </div>
+                  );
+                })}
+                <div style={{ display: "flex", justifyContent: "space-between", borderTop: "1px solid rgba(255,107,53,0.12)", paddingTop: 4, marginTop: 2, fontWeight: 700 }}>
+                  <span style={{ color: "#8A8A7A" }}>total</span>
+                  <span style={{ color: "#FF6B35" }}>{data.timing.total_s}s</span>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Token table */}
+          <div>
+            <p style={{ color: "#8A8A7A", textTransform: "uppercase", letterSpacing: "1.2px", marginBottom: 6 }}>tokens</p>
+            <table style={{ width: "100%", borderCollapse: "collapse" }}>
+              <tbody>
+                {data.call_log.map((c, i) => (
+                  <tr key={i} style={{ borderTop: i > 0 ? "1px solid rgba(255,107,53,0.07)" : "none" }}>
+                    <td style={{ padding: "2px 8px 2px 0", color: "#8A8A7A" }}>{c.task}</td>
+                    <td style={{ padding: "2px 8px 2px 0", textAlign: "right", color: "#F5F5F0" }}>{c.input_tokens + c.output_tokens}</td>
+                    <td style={{ padding: "2px 0", textAlign: "right", color: "#F5F5F0" }}>${c.cost_usd.toFixed(4)}</td>
+                  </tr>
+                ))}
+                <tr style={{ borderTop: "1px solid rgba(255,107,53,0.25)", fontWeight: 700 }}>
+                  <td style={{ padding: "4px 8px 0 0", color: "#8A8A7A" }}>total</td>
+                  <td style={{ padding: "4px 8px 0 0", textAlign: "right", color: "#FF6B35" }}>{totalTokens.toLocaleString()}</td>
+                  <td style={{ padding: "4px 0 0 0", textAlign: "right", color: "#FF6B35" }}>${totalCost.toFixed(4)}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -536,13 +647,6 @@ function SynthesisView({
   onPickMove?: () => void;
 }) {
   const [sourcesOpen, setSourcesOpen] = useState(false);
-  const [statsOpen, setStatsOpen] = useState(false);
-  const isDebug =
-    typeof window !== "undefined" &&
-    new URLSearchParams(window.location.search).get("debug") === "true";
-
-  const totalCost = data.call_log.reduce((s, c) => s + (c.cost_usd || 0), 0);
-  const totalTokens = data.call_log.reduce((s, c) => s + c.input_tokens + c.output_tokens, 0);
 
   const sections = [
     { label: "What the board agrees", text: data.synthesis.agrees, accent: false },
@@ -635,101 +739,6 @@ function SynthesisView({
         )}
       </div>
 
-      {/* Stats accordion — debug only */}
-      {isDebug && <div className="mt-2 fade-in" style={{ animationDelay: "2400ms" }}>
-        <button
-          type="button"
-          onClick={() => setStatsOpen((v) => !v)}
-          className="flex w-full items-center gap-2 py-3 text-left text-[14px]"
-          style={{ color: "#8A8A7A" }}
-        >
-          <ChevronDown
-            size={16}
-            className="transition-transform"
-            style={{ transform: statsOpen ? "rotate(0)" : "rotate(-90deg)" }}
-          />
-          Session stats
-          {data.timing && (
-            <span className="ml-auto text-[12px]" style={{ color: "#FF6B35" }}>
-              {data.timing.total_s}s total
-            </span>
-          )}
-        </button>
-        {statsOpen && (
-          <div className="border-t border-[rgba(255,107,53,0.1)] pt-4 space-y-5">
-            {/* Timing breakdown */}
-            {data.timing && (
-              <div>
-                <p className="mb-2 text-[11px] font-medium uppercase" style={{ color: "#8A8A7A", letterSpacing: "1.5px" }}>
-                  Response time
-                </p>
-                <div className="space-y-1.5">
-                  {(
-                    [
-                      ["Analyze problem",      data.timing.analyze_s],
-                      ["Retrieve context",     data.timing.retrieve_s],
-                      ["Select board",         data.timing.select_board_s],
-                      ["Board responses ×5",   data.timing.board_responses_s],
-                      ["Debate + Lenny",        data.timing.debate_lenny_s],
-                      ["Synthesis + moves",    data.timing.synthesis_pick_s],
-                    ] as [string, number][]
-                  ).map(([label, secs]) => {
-                    const pct = Math.round((secs / data.timing!.total_s) * 100);
-                    return (
-                      <div key={label} className="flex items-center gap-3 text-[12px]">
-                        <span className="w-36 shrink-0" style={{ color: "#8A8A7A" }}>{label}</span>
-                        <div className="relative flex-1 h-1.5 rounded-full overflow-hidden" style={{ background: "rgba(255,107,53,0.1)" }}>
-                          <div className="absolute inset-y-0 left-0 rounded-full" style={{ width: `${pct}%`, background: "rgba(255,107,53,0.5)" }} />
-                        </div>
-                        <span className="w-10 text-right tabular-nums" style={{ color: "#F5F5F0" }}>{secs}s</span>
-                      </div>
-                    );
-                  })}
-                  <div className="flex items-center justify-between pt-1 text-[12px] font-semibold border-t border-[rgba(255,107,53,0.1)] mt-1">
-                    <span style={{ color: "#8A8A7A" }}>Total</span>
-                    <span style={{ color: "#FF6B35" }}>{data.timing.total_s}s</span>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Token / cost table */}
-            <div>
-              <p className="mb-2 text-[11px] font-medium uppercase" style={{ color: "#8A8A7A", letterSpacing: "1.5px" }}>
-                Token usage
-              </p>
-              <div className="overflow-x-auto">
-                <table className="w-full text-[13px]">
-                  <thead style={{ color: "#8A8A7A" }}>
-                    <tr className="text-left">
-                      <th className="py-2 pr-4 font-normal">Task</th>
-                      <th className="py-2 pr-4 font-normal">Model</th>
-                      <th className="py-2 pr-4 text-right font-normal">Tokens</th>
-                      <th className="py-2 pr-4 text-right font-normal">Cost</th>
-                    </tr>
-                  </thead>
-                  <tbody style={{ color: "#F5F5F0" }}>
-                    {data.call_log.map((c, i) => (
-                      <tr key={i} className="border-t border-[rgba(255,107,53,0.06)]">
-                        <td className="py-2 pr-4">{c.task}</td>
-                        <td className="py-2 pr-4" style={{ color: "#8A8A7A" }}>{c.model}</td>
-                        <td className="py-2 pr-4 text-right">{c.input_tokens + c.output_tokens}</td>
-                        <td className="py-2 pr-4 text-right">${c.cost_usd.toFixed(4)}</td>
-                      </tr>
-                    ))}
-                    <tr className="border-t border-[rgba(255,107,53,0.2)] font-bold" style={{ color: "#FF6B35" }}>
-                      <td className="py-3 pr-4">Total</td>
-                      <td />
-                      <td className="py-3 pr-4 text-right">{totalTokens}</td>
-                      <td className="py-3 pr-4 text-right">${totalCost.toFixed(4)}</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-        )}
-      </div>}
 
     </div>
   );
