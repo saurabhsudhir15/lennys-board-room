@@ -68,7 +68,7 @@ function Index() {
     return <BoardResults data={state.data} onReset={reset} problem={problem} />;
 
   return (
-    <main className="mx-auto flex min-h-screen w-full max-w-3xl flex-col items-center px-6 pb-24 pt-24 md:pt-32">
+    <main className="mx-auto flex min-h-screen w-full max-w-3xl flex-col items-center px-6 pb-24 pt-12 md:pt-20">
       {state.kind === "error" && (
         <div
           className="mb-8 w-full rounded-2xl px-5 py-4 text-center fade-in"
@@ -115,31 +115,8 @@ function Index() {
         Five advisors from Lenny's podcast will debate it.
       </p>
 
-      <div className="mt-12 w-full fade-in-up" style={{ animationDelay: "200ms" }}>
-        <textarea
-          value={problem}
-          onChange={(e) => setProblem(e.target.value)}
-          placeholder="What's the problem keeping you up at night?"
-          rows={6}
-          className="w-full resize-none px-5 py-4 text-[16px] outline-none transition-all focus:shadow-[0_0_0_4px_rgba(255,107,53,0.08)]"
-          style={{
-            background: "rgba(255,255,255,0.03)",
-            border: "1px solid rgba(255,107,53,0.2)",
-            borderRadius: "14px",
-            color: "#F5F5F0",
-          }}
-          onFocus={(e) => (e.currentTarget.style.borderColor = "rgba(255,107,53,0.5)")}
-          onBlur={(e) => (e.currentTarget.style.borderColor = "rgba(255,107,53,0.2)")}
-        />
-
-        <p
-          className="mt-2 text-center text-[12px]"
-          style={{ color: "#6B6B5C" }}
-        >
-          Be specific — mention your company stage, what you've already tried, and any key constraints.
-        </p>
-
-        <div className="mt-4 flex flex-wrap justify-center gap-2">
+      <div className="mt-8 w-full fade-in-up" style={{ animationDelay: "200ms" }}>
+        <div className="mb-4 flex flex-wrap justify-center gap-2">
           {EXAMPLES.map((ex) => (
             <button
               type="button"
@@ -158,7 +135,30 @@ function Index() {
           ))}
         </div>
 
-        <div className="mt-8 flex justify-center">
+        <textarea
+          value={problem}
+          onChange={(e) => setProblem(e.target.value)}
+          placeholder="What's the problem keeping you up at night?"
+          rows={5}
+          className="w-full resize-none px-5 py-4 text-[16px] outline-none transition-all focus:shadow-[0_0_0_4px_rgba(255,107,53,0.08)]"
+          style={{
+            background: "rgba(255,255,255,0.03)",
+            border: "1px solid rgba(255,107,53,0.2)",
+            borderRadius: "14px",
+            color: "#F5F5F0",
+          }}
+          onFocus={(e) => (e.currentTarget.style.borderColor = "rgba(255,107,53,0.5)")}
+          onBlur={(e) => (e.currentTarget.style.borderColor = "rgba(255,107,53,0.2)")}
+        />
+
+        <p
+          className="mt-2 text-center text-[12px]"
+          style={{ color: "#6B6B5C" }}
+        >
+          Be specific — mention your company stage, what you've already tried, and any key constraints.
+        </p>
+
+        <div className="mt-6 flex justify-center">
           <button
             type="button"
             onClick={submit}
