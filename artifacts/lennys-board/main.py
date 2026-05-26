@@ -1,5 +1,5 @@
 """FastAPI entry point — replaces Streamlit app.py for the React frontend."""
-from contextvars import ContextVar
+from contextvars import ContextVar, copy_context
 from types import ModuleType
 import concurrent.futures
 import sys
@@ -83,8 +83,9 @@ def assemble(body: ProblemRequest):
     if not body.problem.strip():
         raise HTTPException(status_code=400, detail="problem is required")
 
-    # Reset call log for this request
+    # Reset call log for this request; snapshot context so worker threads inherit it
     _call_log_var.set([])
+    _ctx = copy_context()
 
     try:
         t_start = time.perf_counter()
@@ -112,8 +113,8 @@ def assemble(body: ProblemRequest):
         # Step 5: Debate + Lenny insight in parallel
         t0 = time.perf_counter()
         with concurrent.futures.ThreadPoolExecutor(max_workers=2) as executor:
-            future_debate = executor.submit(board.generate_debate, board_members, responses)
-            future_lenny = executor.submit(board.generate_lenny_insight, body.problem, board_members, responses, chunks)
+            future_debate = executor.submit(_ctx.run, board.generate_debate, board_members, responses)
+            future_lenny = executor.submit(_ctx.run, board.generate_lenny_insight, body.problem, board_members, responses, chunks)
             debate_result = future_debate.result()
             lenny_insight = future_lenny.result()
         t_debate_lenny = round(time.perf_counter() - t0, 2)
@@ -130,8 +131,8 @@ def assemble(body: ProblemRequest):
             }
 
         with concurrent.futures.ThreadPoolExecutor(max_workers=2) as executor:
-            future_synthesis = executor.submit(_synthesis)
-            future_pick = executor.submit(board.generate_pick_your_move, body.problem, board_members, responses)
+            future_synthesis = executor.submit(_ctx.run, _synthesis)
+            future_pick = executor.submit(_ctx.run, board.generate_pick_your_move, body.problem, board_members, responses)
             synthesis = future_synthesis.result()
             pick_your_move = future_pick.result()
         t_synthesis_pick = round(time.perf_counter() - t0, 2)

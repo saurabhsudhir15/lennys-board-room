@@ -159,11 +159,10 @@ export function generateBoardPdf(
 
   /* ── Lenny's Take ── */
   if (data.lenny_insight) {
-    y = guard(doc, y, 30);
-    y = heading(doc, "Lenny's Take", y);
-
     const insightLines = doc.splitTextToSize(data.lenny_insight, CW - 10);
     const boxH = insightLines.length * 5.2 + 10;
+    y = guard(doc, y, boxH + 16);
+    y = heading(doc, "Lenny's Take", y);
 
     doc.setFillColor(...C.surface);
     doc.roundedRect(ML, y - 2, CW, boxH, 2.5, 2.5, "F");
