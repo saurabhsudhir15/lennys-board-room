@@ -76,31 +76,45 @@ def analyze_problem(problem: str) -> dict:
     return json.loads(response.choices[0].message.content)
 
 
-def _embed(text: str) -> list:
+def _embed_batch(texts: list) -> list:
+    """Embed multiple texts in a single API call and return list of embeddings."""
     client = get_openai()
     resp = client.embeddings.create(
         model=config.EMBED_MODEL,
-        input=text,
+        input=texts,
         dimensions=config.EMBED_DIMENSIONS
     )
-    return resp.data[0].embedding
+    resp.data.sort(key=lambda d: d.index)
+    return [d.embedding for d in resp.data]
+
+
+def _embed(text: str) -> list:
+    return _embed_batch([text])[0]
 
 
 def retrieve_chunks(search_queries: list) -> list:
     sb = get_supabase()
-    all_chunks = []
-    for query in search_queries:
-        embedding = _embed(query)
+
+    # Batch-embed all queries in one API call
+    embeddings = _embed_batch(search_queries)
+
+    # Fire all Supabase RPC calls in parallel
+    def _fetch(embedding):
         vec_str = "[" + ",".join(str(x) for x in embedding) + "]"
         try:
             result = sb.rpc("match_chunks", {
                 "query_embedding": vec_str,
                 "match_count": 10
             }).execute()
-            if result.data:
-                all_chunks.extend(result.data)
+            return result.data or []
         except Exception as e:
-            print(f"retrieve_chunks error for '{query[:50]}': {e}")
+            print(f"retrieve_chunks RPC error: {e}")
+            return []
+
+    with concurrent.futures.ThreadPoolExecutor(max_workers=len(embeddings)) as executor:
+        results = list(executor.map(_fetch, embeddings))
+
+    all_chunks = [chunk for batch in results for chunk in batch]
 
     seen_guests = {}
     for chunk in all_chunks:
