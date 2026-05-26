@@ -635,11 +635,10 @@ function SynthesisView({
         )}
       </div>
 
-      {/* Stats accordion */}
-      {isDebug && (
+      {/* Stats accordion — always visible */}
       <div className="mt-2 fade-in" style={{ animationDelay: "2400ms" }}>
         <button
-            type="button"
+          type="button"
           onClick={() => setStatsOpen((v) => !v)}
           className="flex w-full items-center gap-2 py-3 text-left text-[14px]"
           style={{ color: "#8A8A7A" }}
@@ -650,44 +649,87 @@ function SynthesisView({
             style={{ transform: statsOpen ? "rotate(0)" : "rotate(-90deg)" }}
           />
           Session stats
+          {data.timing && (
+            <span className="ml-auto text-[12px]" style={{ color: "#FF6B35" }}>
+              {data.timing.total_s}s total
+            </span>
+          )}
         </button>
         {statsOpen && (
-          <div className="overflow-x-auto border-t border-[rgba(255,107,53,0.1)] pt-4">
-            <table className="w-full text-[13px]">
-              <thead style={{ color: "#8A8A7A" }}>
-                <tr className="text-left">
-                  <th className="py-2 pr-4 font-normal">Task</th>
-                  <th className="py-2 pr-4 font-normal">Model</th>
-                  <th className="py-2 pr-4 text-right font-normal">Tokens</th>
-                  <th className="py-2 pr-4 text-right font-normal">Cost</th>
-                </tr>
-              </thead>
-              <tbody style={{ color: "#F5F5F0" }}>
-                {data.call_log.map((c, i) => (
-                  <tr key={i} className="border-t border-[rgba(255,107,53,0.06)]">
-                    <td className="py-2 pr-4">{c.task}</td>
-                    <td className="py-2 pr-4" style={{ color: "#8A8A7A" }}>
-                      {c.model}
-                    </td>
-                    <td className="py-2 pr-4 text-right">{c.input_tokens + c.output_tokens}</td>
-                    <td className="py-2 pr-4 text-right">${c.cost_usd.toFixed(4)}</td>
-                  </tr>
-                ))}
-                <tr
-                  className="border-t border-[rgba(255,107,53,0.2)] font-bold"
-                  style={{ color: "#FF6B35" }}
-                >
-                  <td className="py-3 pr-4">Total</td>
-                  <td />
-                  <td className="py-3 pr-4 text-right">{totalTokens}</td>
-                  <td className="py-3 pr-4 text-right">${totalCost.toFixed(4)}</td>
-                </tr>
-              </tbody>
-            </table>
+          <div className="border-t border-[rgba(255,107,53,0.1)] pt-4 space-y-5">
+            {/* Timing breakdown */}
+            {data.timing && (
+              <div>
+                <p className="mb-2 text-[11px] font-medium uppercase" style={{ color: "#8A8A7A", letterSpacing: "1.5px" }}>
+                  Response time
+                </p>
+                <div className="space-y-1.5">
+                  {(
+                    [
+                      ["Analyze problem",      data.timing.analyze_s],
+                      ["Retrieve context",     data.timing.retrieve_s],
+                      ["Select board",         data.timing.select_board_s],
+                      ["Board responses ×5",   data.timing.board_responses_s],
+                      ["Debate + Lenny",        data.timing.debate_lenny_s],
+                      ["Synthesis + moves",    data.timing.synthesis_pick_s],
+                    ] as [string, number][]
+                  ).map(([label, secs]) => {
+                    const pct = Math.round((secs / data.timing!.total_s) * 100);
+                    return (
+                      <div key={label} className="flex items-center gap-3 text-[12px]">
+                        <span className="w-36 shrink-0" style={{ color: "#8A8A7A" }}>{label}</span>
+                        <div className="relative flex-1 h-1.5 rounded-full overflow-hidden" style={{ background: "rgba(255,107,53,0.1)" }}>
+                          <div className="absolute inset-y-0 left-0 rounded-full" style={{ width: `${pct}%`, background: "rgba(255,107,53,0.5)" }} />
+                        </div>
+                        <span className="w-10 text-right tabular-nums" style={{ color: "#F5F5F0" }}>{secs}s</span>
+                      </div>
+                    );
+                  })}
+                  <div className="flex items-center justify-between pt-1 text-[12px] font-semibold border-t border-[rgba(255,107,53,0.1)] mt-1">
+                    <span style={{ color: "#8A8A7A" }}>Total</span>
+                    <span style={{ color: "#FF6B35" }}>{data.timing.total_s}s</span>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Token / cost table */}
+            <div>
+              <p className="mb-2 text-[11px] font-medium uppercase" style={{ color: "#8A8A7A", letterSpacing: "1.5px" }}>
+                Token usage
+              </p>
+              <div className="overflow-x-auto">
+                <table className="w-full text-[13px]">
+                  <thead style={{ color: "#8A8A7A" }}>
+                    <tr className="text-left">
+                      <th className="py-2 pr-4 font-normal">Task</th>
+                      <th className="py-2 pr-4 font-normal">Model</th>
+                      <th className="py-2 pr-4 text-right font-normal">Tokens</th>
+                      <th className="py-2 pr-4 text-right font-normal">Cost</th>
+                    </tr>
+                  </thead>
+                  <tbody style={{ color: "#F5F5F0" }}>
+                    {data.call_log.map((c, i) => (
+                      <tr key={i} className="border-t border-[rgba(255,107,53,0.06)]">
+                        <td className="py-2 pr-4">{c.task}</td>
+                        <td className="py-2 pr-4" style={{ color: "#8A8A7A" }}>{c.model}</td>
+                        <td className="py-2 pr-4 text-right">{c.input_tokens + c.output_tokens}</td>
+                        <td className="py-2 pr-4 text-right">${c.cost_usd.toFixed(4)}</td>
+                      </tr>
+                    ))}
+                    <tr className="border-t border-[rgba(255,107,53,0.2)] font-bold" style={{ color: "#FF6B35" }}>
+                      <td className="py-3 pr-4">Total</td>
+                      <td />
+                      <td className="py-3 pr-4 text-right">{totalTokens}</td>
+                      <td className="py-3 pr-4 text-right">${totalCost.toFixed(4)}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
           </div>
         )}
       </div>
-      )}
 
     </div>
   );

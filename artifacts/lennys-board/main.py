@@ -39,6 +39,7 @@ sys.modules.setdefault("streamlit", _FakeST("streamlit"))
 import board  # noqa: E402
 import config  # noqa: E402
 
+import time
 from fastapi import FastAPI, HTTPException, WebSocket
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
@@ -86,26 +87,39 @@ async def assemble(body: ProblemRequest):
     _call_log_var.set([])
 
     try:
+        t_start = time.perf_counter()
+
         # 1. Analyze problem to get search queries
+        t0 = time.perf_counter()
         analysis = board.analyze_problem(body.problem)
+        t_analyze = round(time.perf_counter() - t0, 2)
 
         # 2. Retrieve relevant chunks from Supabase
+        t0 = time.perf_counter()
         chunks = board.retrieve_chunks(analysis["search_queries"])
+        t_retrieve = round(time.perf_counter() - t0, 2)
 
         # 3. Select 5 board members + assign roles
+        t0 = time.perf_counter()
         board_members = board.select_board(body.problem, chunks)
+        t_select = round(time.perf_counter() - t0, 2)
 
         # 4. Generate all 5 responses in parallel
+        t0 = time.perf_counter()
         responses = board.generate_all_responses(board_members, body.problem)
+        t_responses = round(time.perf_counter() - t0, 2)
 
         # Step 5: Debate + Lenny insight in parallel
+        t0 = time.perf_counter()
         with concurrent.futures.ThreadPoolExecutor(max_workers=2) as executor:
             future_debate = executor.submit(board.generate_debate, board_members, responses)
             future_lenny = executor.submit(board.generate_lenny_insight, body.problem, board_members, responses, chunks)
             debate_result = future_debate.result()
             lenny_insight = future_lenny.result()
+        t_debate_lenny = round(time.perf_counter() - t0, 2)
 
         # Step 6: Synthesis (needs clash names) + Pick Your Move (independent) — run in parallel
+        t0 = time.perf_counter()
         def _synthesis():
             raw = board.generate_synthesis(body.problem, board_members, responses, debate_result["clash"])
             paragraphs = [p.strip() for p in raw.strip().split("\n\n") if p.strip()]
@@ -120,6 +134,19 @@ async def assemble(body: ProblemRequest):
             future_pick = executor.submit(board.generate_pick_your_move, body.problem, board_members, responses)
             synthesis = future_synthesis.result()
             pick_your_move = future_pick.result()
+        t_synthesis_pick = round(time.perf_counter() - t0, 2)
+
+        t_total = round(time.perf_counter() - t_start, 2)
+        timing = {
+            "analyze_s": t_analyze,
+            "retrieve_s": t_retrieve,
+            "select_board_s": t_select,
+            "board_responses_s": t_responses,
+            "debate_lenny_s": t_debate_lenny,
+            "synthesis_pick_s": t_synthesis_pick,
+            "total_s": t_total,
+        }
+        print(f"[timing] total={t_total}s | analyze={t_analyze} retrieve={t_retrieve} select={t_select} responses={t_responses} debate+lenny={t_debate_lenny} synthesis+pick={t_synthesis_pick}")
 
         # Build board list with guest titles for the frontend
         result_board = []
@@ -141,6 +168,7 @@ async def assemble(body: ProblemRequest):
             "pick_your_move": pick_your_move,
             "lenny_insight": lenny_insight,
             "call_log": _call_log_var.get(),
+            "timing": timing,
         }
 
     except Exception as exc:
