@@ -462,6 +462,7 @@ def generate_pick_your_move(problem: str, board_members: list, responses: list) 
                     "title (2-4 words, the name of the move), "
                     "action (what to actually do, 1-2 sentences), "
                     "reasoning (why this is the right bet for this situation, 1-2 sentences), "
+                    "tradeoff (what the PM is giving up or de-prioritizing by choosing this path, 1 sentence), "
                     "backed_by (the board member whose thinking drives this option, first name + last name only)."
                 )
             },
