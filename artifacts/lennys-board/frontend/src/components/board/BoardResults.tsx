@@ -635,8 +635,8 @@ function SynthesisView({
         )}
       </div>
 
-      {/* Stats accordion — always visible */}
-      <div className="mt-2 fade-in" style={{ animationDelay: "2400ms" }}>
+      {/* Stats accordion — debug only */}
+      {isDebug && <div className="mt-2 fade-in" style={{ animationDelay: "2400ms" }}>
         <button
           type="button"
           onClick={() => setStatsOpen((v) => !v)}
@@ -729,7 +729,7 @@ function SynthesisView({
             </div>
           </div>
         )}
-      </div>
+      </div>}
 
     </div>
   );
