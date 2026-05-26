@@ -880,12 +880,11 @@ function PickYourMoveScreen({
 
               <div
                 className="mt-4 flex items-center justify-between"
-                style={{ opacity: expanded ? 1 : 1 }}
               >
                 <p className="text-[12px]" style={{ color: "#FF6B35" }}>
                   Backed by {m.backed_by}
                 </p>
-                {expanded && (
+                {(isSelected || isChosen) && (
                   <div style={{ opacity: 0, animation: "fade-in 400ms ease-out 350ms forwards" }}>
                     {isChosen ? (
                       <button
