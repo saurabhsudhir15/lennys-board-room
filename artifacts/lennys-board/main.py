@@ -79,7 +79,7 @@ async def stcore_stream_noop(websocket: WebSocket):
         pass
 
 @app.post("/assemble")
-async def assemble(body: ProblemRequest):
+def assemble(body: ProblemRequest):
     if not body.problem.strip():
         raise HTTPException(status_code=400, detail="problem is required")
 
