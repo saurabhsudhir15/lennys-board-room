@@ -875,11 +875,18 @@ function PickYourMoveScreen({
                     </p>
                   )}
 
-                  <div
-                    className="mt-4 flex items-center justify-between"
-                    style={{ opacity: 0, animation: "fade-in 400ms ease-out 350ms forwards" }}
-                  >
-                    <span />
+                </>
+              )}
+
+              <div
+                className="mt-4 flex items-center justify-between"
+                style={{ opacity: expanded ? 1 : 1 }}
+              >
+                <p className="text-[12px]" style={{ color: "#FF6B35" }}>
+                  Backed by {m.backed_by}
+                </p>
+                {expanded && (
+                  <div style={{ opacity: 0, animation: "fade-in 400ms ease-out 350ms forwards" }}>
                     {isChosen ? (
                       <button
                         type="button"
@@ -918,12 +925,8 @@ function PickYourMoveScreen({
                       </button>
                     )}
                   </div>
-                </>
-              )}
-
-              <p className="mt-4 text-[12px]" style={{ color: "#FF6B35" }}>
-                Backed by {m.backed_by}
-              </p>
+                )}
+              </div>
             </div>
           );
         })}
