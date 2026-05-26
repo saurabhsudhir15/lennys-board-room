@@ -276,9 +276,8 @@ def generate_all_responses(board_members: list, problem: str) -> list:
         return idx, generate_board_response(member["guest_name"], role, role_desc, chunk, problem)
 
     import contextvars
-    _ctx = contextvars.copy_context()
     with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
-        futures = {executor.submit(_ctx.run, fetch, i, m): i for i, m in enumerate(board_members)}
+        futures = {executor.submit(contextvars.copy_context().run, fetch, i, m): i for i, m in enumerate(board_members)}
         for future in concurrent.futures.as_completed(futures):
             idx, resp = future.result()
             responses[idx] = resp
