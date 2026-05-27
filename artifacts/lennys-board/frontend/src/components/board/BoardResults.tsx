@@ -425,7 +425,6 @@ function BoardPlayer({ data, onComplete }: { data: BoardResponse; onComplete: ()
             style={{
               width: `${progress * 100}%`,
               background: "#FF6B35",
-              transition: playing ? "width 80ms linear" : "none",
             }}
           />
         </div>
