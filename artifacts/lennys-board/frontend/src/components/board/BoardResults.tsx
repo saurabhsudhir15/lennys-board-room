@@ -268,12 +268,12 @@ function ReviewBoardLink({ onClick }: { onClick: () => void }) {
 function BoardPlayer({ data, onComplete }: { data: BoardResponse; onComplete: () => void }) {
   const [index, setIndex] = useState(0);
   const [playing, setPlaying] = useState(true);
-  const [progress, setProgress] = useState(0); // 0..1
   const [direction, setDirection] = useState<1 | -1>(1);
   const [animKey, setAnimKey] = useState(0);
   const startRef = useRef<number>(performance.now());
   const elapsedRef = useRef<number>(0);
   const rafRef = useRef<number | null>(null);
+  const progressBarRef = useRef<HTMLDivElement>(null);
 
   const total = data.board.length;
   const member = data.board[index];
@@ -290,7 +290,7 @@ function BoardPlayer({ data, onComplete }: { data: BoardResponse; onComplete: ()
     setAnimKey((k) => k + 1);
     elapsedRef.current = 0;
     startRef.current = performance.now();
-    setProgress(0);
+    if (progressBarRef.current) progressBarRef.current.style.width = "0%";
     setPlaying(true);
   };
 
@@ -303,7 +303,7 @@ function BoardPlayer({ data, onComplete }: { data: BoardResponse; onComplete: ()
       const e = now - startRef.current;
       elapsedRef.current = e;
       const p = Math.min(e / DURATION_MS, 1);
-      setProgress(p);
+      if (progressBarRef.current) progressBarRef.current.style.width = `${p * 100}%`;
       if (p >= 1) {
         if (index + 1 >= total) {
           onComplete();
@@ -421,11 +421,9 @@ function BoardPlayer({ data, onComplete }: { data: BoardResponse; onComplete: ()
       <div className="mt-6 w-full" style={{ maxWidth: 680 }}>
         <div className="h-[3px] w-full rounded-full" style={{ background: "rgba(255,107,53,0.12)" }}>
           <div
+            ref={progressBarRef}
             className="h-full rounded-full"
-            style={{
-              width: `${progress * 100}%`,
-              background: "#FF6B35",
-            }}
+            style={{ width: "0%", background: "#FF6B35" }}
           />
         </div>
 
