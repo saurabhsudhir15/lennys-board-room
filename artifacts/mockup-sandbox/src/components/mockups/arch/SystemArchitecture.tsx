@@ -7,8 +7,8 @@ function Arrow({ label }: { label?: string }) {
       <div className="w-px bg-gray-300" style={{ height: 10 }} />
       {label ? (
         <span
-          className="font-mono text-gray-400 bg-white border border-gray-200 rounded px-2"
-          style={{ fontSize: 9, lineHeight: "18px", whiteSpace: "nowrap" }}
+          className="font-mono text-gray-600 bg-white border border-gray-200 rounded px-2"
+          style={{ fontSize: 11, lineHeight: "20px", whiteSpace: "nowrap" }}
         >
           {label}
         </span>
@@ -43,7 +43,7 @@ function HArrow({ label }: { label?: string }) {
         />
       </div>
       {label && (
-        <span className="font-mono text-gray-400 mt-1" style={{ fontSize: 9, whiteSpace: "nowrap" }}>
+        <span className="font-mono text-gray-600 mt-1" style={{ fontSize: 11, whiteSpace: "nowrap" }}>
           {label}
         </span>
       )}
