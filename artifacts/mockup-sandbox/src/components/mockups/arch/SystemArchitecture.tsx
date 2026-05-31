@@ -1,3 +1,6 @@
+import { useRef, useState } from "react";
+import html2canvas from "html2canvas";
+
 function Arrow({ label }: { label?: string }) {
   return (
     <div className="flex flex-col items-center" style={{ gap: 0 }}>
@@ -90,9 +93,43 @@ function Step({
 }
 
 export function SystemArchitecture() {
+  const cardRef = useRef<HTMLDivElement>(null);
+  const [downloading, setDownloading] = useState(false);
+
+  const handleDownload = async () => {
+    if (!cardRef.current) return;
+    setDownloading(true);
+    try {
+      const canvas = await html2canvas(cardRef.current, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: "#ffffff",
+      });
+      const link = document.createElement("a");
+      link.download = "lennys-board-room-architecture.png";
+      link.href = canvas.toDataURL("image/png");
+      link.click();
+    } finally {
+      setDownloading(false);
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-gray-50 flex items-start justify-center p-8">
+    <div className="min-h-screen bg-gray-50 flex flex-col items-center p-8" style={{ gap: 12 }}>
+      {/* Toolbar — sits above the card, excluded from PNG export */}
+      <div className="flex justify-end w-full" style={{ maxWidth: 860 }}>
+        <button
+          onClick={handleDownload}
+          disabled={downloading}
+          className="flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors disabled:opacity-50 shadow-sm"
+          style={{ fontSize: 13, height: 36, fontWeight: 500 }}
+        >
+          {downloading ? "Saving…" : "⬇ Download PNG"}
+        </button>
+      </div>
+
       <div
+        ref={cardRef}
         className="bg-white rounded-2xl border border-gray-200 w-full"
         style={{ maxWidth: 860, boxShadow: "0 4px 32px rgba(0,0,0,0.07)" }}
       >
