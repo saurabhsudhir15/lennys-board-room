@@ -137,12 +137,9 @@ export function SystemArchitecture() {
         <div className="px-8 pt-8 pb-6 border-b border-gray-100">
           <div className="flex items-start justify-between">
             <div>
-              <h1 className="font-bold text-gray-900 tracking-tight" style={{ fontSize: 18 }}>
-                Lenny's Board Room
-              </h1>
-              <p className="text-gray-400 mt-0.5" style={{ fontSize: 12 }}>
+              <h1 className="font-bold text-gray-900 tracking-tight" style={{ fontSize: 20 }}>
                 System Architecture
-              </p>
+              </h1>
             </div>
             <div className="flex gap-1.5 flex-wrap justify-end">
               {["React 19", "FastAPI", "gpt-4o / gpt-4o-mini", "text-embedding-3-small", "Supabase pgvector"].map(
@@ -165,8 +162,8 @@ export function SystemArchitecture() {
           <div>
             <div className="flex items-center gap-3 mb-4">
               <span
-                className="font-bold text-gray-300 uppercase tracking-widest"
-                style={{ fontSize: 10 }}
+                className="font-bold text-gray-500 uppercase tracking-widest"
+                style={{ fontSize: 11 }}
               >
                 Layer 1 · Product Stack
               </span>
@@ -230,8 +227,8 @@ export function SystemArchitecture() {
           <div>
             <div className="flex items-center gap-3 mb-4">
               <span
-                className="font-bold text-gray-300 uppercase tracking-widest"
-                style={{ fontSize: 10 }}
+                className="font-bold text-gray-500 uppercase tracking-widest"
+                style={{ fontSize: 11 }}
               >
                 Layer 2 · RAG Pipeline
               </span>
@@ -334,12 +331,12 @@ export function SystemArchitecture() {
               {/* Legend + stats sidebar */}
               <div className="flex-shrink-0" style={{ width: 152 }}>
                 <div
-                  className="font-bold text-gray-300 uppercase tracking-widest mb-3"
-                  style={{ fontSize: 9 }}
+                  className="font-bold text-gray-500 uppercase tracking-widest mb-3"
+                  style={{ fontSize: 10 }}
                 >
-                  Step legend
+                  Step Legend
                 </div>
-                <div className="space-y-2" style={{ fontSize: 11 }}>
+                <div className="space-y-2" style={{ fontSize: 12 }}>
                   {[
                     { color: "#E5E7EB", label: "Input / Output" },
                     { color: "#FDE68A", label: "gpt-4o-mini" },
@@ -358,12 +355,12 @@ export function SystemArchitecture() {
                 </div>
 
                 <div
-                  className="font-bold text-gray-300 uppercase tracking-widest mt-6 mb-3"
-                  style={{ fontSize: 9 }}
+                  className="font-bold text-gray-500 uppercase tracking-widest mt-6 mb-3"
+                  style={{ fontSize: 10 }}
                 >
                   Data
                 </div>
-                <div className="space-y-1 text-gray-500" style={{ fontSize: 11 }}>
+                <div className="space-y-1 text-gray-600" style={{ fontSize: 12 }}>
                   <div>2,178 transcript chunks</div>
                   <div>50 podcast guests</div>
                   <div>Lenny's newsletters</div>
@@ -371,12 +368,12 @@ export function SystemArchitecture() {
                 </div>
 
                 <div
-                  className="font-bold text-gray-300 uppercase tracking-widest mt-6 mb-3"
-                  style={{ fontSize: 9 }}
+                  className="font-bold text-gray-500 uppercase tracking-widest mt-6 mb-3"
+                  style={{ fontSize: 10 }}
                 >
                   Cost per run
                 </div>
-                <div className="space-y-1 text-gray-500" style={{ fontSize: 11 }}>
+                <div className="space-y-1 text-gray-600" style={{ fontSize: 12 }}>
                   <div>~11 LLM calls</div>
                   <div>≈ $0.03 – $0.08</div>
                   <div>~25–35 sec</div>
