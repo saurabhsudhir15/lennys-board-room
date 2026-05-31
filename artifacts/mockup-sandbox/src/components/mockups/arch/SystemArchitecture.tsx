@@ -203,7 +203,7 @@ export function SystemArchitecture() {
                 </div>
               </div>
 
-              <HArrow label="embed · query · ↩ chunks" />
+              <HArrow label="embed · query · ← chunks" />
 
               {/* Supabase */}
               <div
