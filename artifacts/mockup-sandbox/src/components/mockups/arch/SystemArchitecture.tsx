@@ -29,7 +29,7 @@ function Arrow({ label }: { label?: string }) {
 
 function HArrow({ label }: { label?: string }) {
   return (
-    <div className="flex flex-col items-center justify-center flex-shrink-0" style={{ width: 88 }}>
+    <div className="flex flex-col items-center justify-center flex-shrink-0" style={{ width: 120 }}>
       <div className="flex items-center w-full">
         <div className="flex-1 bg-gray-300" style={{ height: 1 }} />
         <div
@@ -43,7 +43,7 @@ function HArrow({ label }: { label?: string }) {
         />
       </div>
       {label && (
-        <span className="font-mono text-gray-600 mt-1" style={{ fontSize: 11, whiteSpace: "nowrap" }}>
+        <span className="font-mono text-gray-600 mt-1" style={{ fontSize: 11, textAlign: "center", lineHeight: 1.4 }}>
           {label}
         </span>
       )}
