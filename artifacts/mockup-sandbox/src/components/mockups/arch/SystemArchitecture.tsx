@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import html2canvas from "html2canvas";
+import { toPng } from "html-to-image";
 
 function Arrow({ label }: { label?: string }) {
   return (
@@ -100,15 +100,16 @@ export function SystemArchitecture() {
     if (!cardRef.current) return;
     setDownloading(true);
     try {
-      const canvas = await html2canvas(cardRef.current, {
-        scale: 2,
-        useCORS: true,
+      const dataUrl = await toPng(cardRef.current, {
+        pixelRatio: 2,
         backgroundColor: "#ffffff",
       });
       const link = document.createElement("a");
       link.download = "lennys-board-room-architecture.png";
-      link.href = canvas.toDataURL("image/png");
+      link.href = dataUrl;
+      document.body.appendChild(link);
       link.click();
+      document.body.removeChild(link);
     } finally {
       setDownloading(false);
     }
