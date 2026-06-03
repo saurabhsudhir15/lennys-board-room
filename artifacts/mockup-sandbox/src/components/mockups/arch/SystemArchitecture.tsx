@@ -303,9 +303,9 @@ export function SystemArchitecture() {
                   textColor="text-amber-900"
                   subColor="text-amber-500"
                   note={{
-                    color: "red",
-                    text: "⚠ Bottleneck: 13s = 46% of total latency",
-                    sub: "Intuition said the 5 parallel LLM calls. Data said otherwise.",
+                    color: "blue",
+                    text: "📊 Measured bottleneck: 13s = 46% of total latency",
+                    sub: "Intuition: parallel LLM calls. Instrumentation said: select_board. Mitigated via streaming — users see progress immediately.",
                   }}
                 />
 
