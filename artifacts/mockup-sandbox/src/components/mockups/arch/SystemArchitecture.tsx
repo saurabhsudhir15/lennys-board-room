@@ -61,6 +61,7 @@ function Step({
   subColor,
   badgeBg,
   badgeText,
+  note,
 }: {
   label: string;
   sub?: string;
@@ -71,22 +72,47 @@ function Step({
   subColor: string;
   badgeBg?: string;
   badgeText?: string;
+  note?: { text: string; sub?: string; color: "red" | "blue" };
 }) {
   return (
-    <div
-      className={`rounded-lg px-4 py-2.5 flex items-center justify-between gap-3 ${bg} border ${border}`}
-    >
-      <div>
-        <div className={`font-semibold text-sm ${textColor}`}>{label}</div>
-        {sub && <div className={`font-mono mt-0.5 ${subColor}`} style={{ fontSize: 10 }}>{sub}</div>}
+    <div className={`rounded-lg px-4 py-2.5 ${bg} border ${border}`}>
+      <div className="flex items-center justify-between gap-3">
+        <div>
+          <div className={`font-semibold text-sm ${textColor}`}>{label}</div>
+          {sub && <div className={`font-mono mt-0.5 ${subColor}`} style={{ fontSize: 10 }}>{sub}</div>}
+        </div>
+        {badge && (
+          <span
+            className={`font-mono rounded px-2 flex-shrink-0 ${badgeBg} ${badgeText}`}
+            style={{ fontSize: 9, lineHeight: "18px" }}
+          >
+            {badge}
+          </span>
+        )}
       </div>
-      {badge && (
-        <span
-          className={`font-mono rounded px-2 flex-shrink-0 ${badgeBg} ${badgeText}`}
-          style={{ fontSize: 9, lineHeight: "18px" }}
+      {note && (
+        <div
+          className={`mt-2 rounded px-3 py-2 border ${
+            note.color === "red"
+              ? "bg-red-50 border-red-200"
+              : "bg-sky-50 border-sky-200"
+          }`}
         >
-          {badge}
-        </span>
+          <div
+            className={`font-semibold ${note.color === "red" ? "text-red-700" : "text-sky-700"}`}
+            style={{ fontSize: 11 }}
+          >
+            {note.text}
+          </div>
+          {note.sub && (
+            <div
+              className={`font-mono mt-0.5 ${note.color === "red" ? "text-red-500" : "text-sky-500"}`}
+              style={{ fontSize: 10 }}
+            >
+              {note.sub}
+            </div>
+          )}
+        </div>
       )}
     </div>
   );
@@ -105,7 +131,7 @@ export function SystemArchitecture() {
         backgroundColor: "#ffffff",
       });
       const link = document.createElement("a");
-      link.download = "lennys-board-room-architecture.png";
+      link.download = "system-design.png";
       link.href = dataUrl;
       document.body.appendChild(link);
       link.click();
@@ -117,8 +143,8 @@ export function SystemArchitecture() {
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col items-center p-8" style={{ gap: 12 }}>
-      {/* Toolbar — sits above the card, excluded from PNG export */}
-      <div className="flex justify-end w-full" style={{ maxWidth: 860 }}>
+      {/* Toolbar */}
+      <div className="flex justify-end w-full" style={{ maxWidth: 960 }}>
         <button
           onClick={handleDownload}
           disabled={downloading}
@@ -132,14 +158,14 @@ export function SystemArchitecture() {
       <div
         ref={cardRef}
         className="bg-white rounded-2xl border border-gray-200 w-full"
-        style={{ maxWidth: 860, boxShadow: "0 4px 32px rgba(0,0,0,0.07)" }}
+        style={{ maxWidth: 960, boxShadow: "0 4px 32px rgba(0,0,0,0.07)" }}
       >
         {/* Header */}
         <div className="px-8 pt-8 pb-6 border-b border-gray-100">
           <div className="flex items-start justify-between">
             <div>
               <h1 className="font-bold text-gray-900 tracking-tight" style={{ fontSize: 20 }}>
-                System Architecture
+                System Design
               </h1>
             </div>
             <div className="flex gap-1.5 flex-wrap justify-end">
@@ -162,10 +188,7 @@ export function SystemArchitecture() {
           {/* ── LAYER 1 ── */}
           <div>
             <div className="flex items-center gap-3 mb-4">
-              <span
-                className="font-bold text-gray-500 uppercase tracking-widest"
-                style={{ fontSize: 11 }}
-              >
+              <span className="font-bold text-gray-500 uppercase tracking-widest" style={{ fontSize: 11 }}>
                 Layer 1 · Product Stack
               </span>
               <div className="flex-1 h-px bg-gray-100" />
@@ -227,10 +250,7 @@ export function SystemArchitecture() {
           {/* ── LAYER 2 ── */}
           <div>
             <div className="flex items-center gap-3 mb-4">
-              <span
-                className="font-bold text-gray-500 uppercase tracking-widest"
-                style={{ fontSize: 11 }}
-              >
+              <span className="font-bold text-gray-500 uppercase tracking-widest" style={{ fontSize: 11 }}>
                 Layer 2 · RAG Pipeline
               </span>
               <div className="flex-1 h-px bg-gray-100" />
@@ -282,6 +302,11 @@ export function SystemArchitecture() {
                   border="border-amber-200"
                   textColor="text-amber-900"
                   subColor="text-amber-500"
+                  note={{
+                    color: "red",
+                    text: "⚠ Bottleneck: 13s = 46% of total latency",
+                    sub: "Intuition said the 5 parallel LLM calls. Data said otherwise.",
+                  }}
                 />
 
                 <Arrow label="×5 parallel · gpt-4o-mini" />
@@ -293,6 +318,10 @@ export function SystemArchitecture() {
                   border="border-emerald-200"
                   textColor="text-emerald-900"
                   subColor="text-emerald-600"
+                  note={{
+                    color: "blue",
+                    text: "ThreadPoolExecutor: 5 parallel calls → latency of slowest single call (~3s) vs 10s+ sequential",
+                  }}
                 />
 
                 <Arrow label="parallel · gpt-4o" />
@@ -329,55 +358,75 @@ export function SystemArchitecture() {
                 />
               </div>
 
-              {/* Legend + stats sidebar */}
-              <div className="flex-shrink-0" style={{ width: 152 }}>
-                <div
-                  className="font-bold text-gray-500 uppercase tracking-widest mb-3"
-                  style={{ fontSize: 10 }}
-                >
-                  Step Legend
-                </div>
-                <div className="space-y-2" style={{ fontSize: 12 }}>
-                  {[
-                    { color: "#E5E7EB", label: "Input / Output" },
-                    { color: "#FDE68A", label: "gpt-4o-mini" },
-                    { color: "#DDD6FE", label: "pgvector retrieval" },
-                    { color: "#A7F3D0", label: "Parallel generation" },
-                    { color: "#FDBA74", label: "gpt-4o synthesis" },
-                  ].map(({ color, label }) => (
-                    <div key={label} className="flex items-center gap-2">
-                      <div
-                        className="rounded flex-shrink-0 border border-gray-200"
-                        style={{ width: 12, height: 12, background: color }}
-                      />
-                      <span className="text-gray-500">{label}</span>
-                    </div>
-                  ))}
-                </div>
-
-                <div
-                  className="font-bold text-gray-500 uppercase tracking-widest mt-6 mb-3"
-                  style={{ fontSize: 10 }}
-                >
-                  Data
-                </div>
-                <div className="space-y-1 text-gray-600" style={{ fontSize: 12 }}>
-                  <div>2,178 transcript chunks</div>
-                  <div>50 podcast guests</div>
-                  <div>Lenny's newsletters</div>
-                  <div>1536-dim vectors</div>
+              {/* Sidebar */}
+              <div className="flex-shrink-0 flex flex-col gap-6" style={{ width: 168 }}>
+                {/* Step Legend */}
+                <div>
+                  <div className="font-bold text-gray-500 uppercase tracking-widest mb-3" style={{ fontSize: 10 }}>
+                    Step Legend
+                  </div>
+                  <div className="space-y-2" style={{ fontSize: 12 }}>
+                    {[
+                      { color: "#E5E7EB", label: "Input / Output" },
+                      { color: "#FDE68A", label: "gpt-4o-mini" },
+                      { color: "#DDD6FE", label: "pgvector retrieval" },
+                      { color: "#A7F3D0", label: "Parallel generation" },
+                      { color: "#FDBA74", label: "gpt-4o synthesis" },
+                    ].map(({ color, label }) => (
+                      <div key={label} className="flex items-center gap-2">
+                        <div
+                          className="rounded flex-shrink-0 border border-gray-200"
+                          style={{ width: 12, height: 12, background: color }}
+                        />
+                        <span className="text-gray-500">{label}</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
 
-                <div
-                  className="font-bold text-gray-500 uppercase tracking-widest mt-6 mb-3"
-                  style={{ fontSize: 10 }}
-                >
-                  Cost per run
+                {/* Data */}
+                <div>
+                  <div className="font-bold text-gray-500 uppercase tracking-widest mb-3" style={{ fontSize: 10 }}>
+                    Data
+                  </div>
+                  <div className="space-y-1 text-gray-600" style={{ fontSize: 12 }}>
+                    <div>2,178 transcript chunks</div>
+                    <div>50 podcast guests</div>
+                    <div>Lenny's newsletters</div>
+                    <div>1536-dim vectors</div>
+                  </div>
                 </div>
-                <div className="space-y-1 text-gray-600" style={{ fontSize: 12 }}>
-                  <div>~11 LLM calls</div>
-                  <div>≈ $0.03 – $0.08</div>
-                  <div>~25–35 sec</div>
+
+                {/* Cost per run */}
+                <div>
+                  <div className="font-bold text-gray-500 uppercase tracking-widest mb-3" style={{ fontSize: 10 }}>
+                    Cost per run
+                  </div>
+                  <div className="space-y-1 text-gray-600" style={{ fontSize: 12 }}>
+                    <div>~11 LLM calls</div>
+                    <div>~$0.022 per session</div>
+                    <div>28s end-to-end</div>
+                  </div>
+                </div>
+
+                {/* Key Decisions */}
+                <div className="rounded-lg border border-gray-200 bg-gray-50 px-3 py-3">
+                  <div className="font-bold text-gray-700 mb-2" style={{ fontSize: 11 }}>
+                    Key Decisions
+                  </div>
+                  <ul className="space-y-2" style={{ fontSize: 11 }}>
+                    {[
+                      "Parallel LLM calls over sequential — 3× faster",
+                      "gpt-4o-mini for board responses, gpt-4o for synthesis only — cost optimized",
+                      "Supabase pgvector over Pinecone — one account, one dashboard, no extra dependency",
+                      "Instrumented from day one → found actual bottleneck was select_board, not generation",
+                    ].map((d) => (
+                      <li key={d} className="flex gap-1.5 text-gray-600 leading-snug">
+                        <span className="text-gray-400 flex-shrink-0" style={{ marginTop: 1 }}>·</span>
+                        <span>{d}</span>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
               </div>
             </div>
