@@ -302,11 +302,6 @@ export function SystemArchitecture() {
                   border="border-amber-200"
                   textColor="text-amber-900"
                   subColor="text-amber-500"
-                  note={{
-                    color: "blue",
-                    text: "📊 Measured bottleneck: 13s = 46% of total latency",
-                    sub: "Intuition: parallel LLM calls. Instrumentation said: select_board. Mitigated via streaming — users see progress immediately.",
-                  }}
                 />
 
                 <Arrow label="×5 parallel · gpt-4o-mini" />
@@ -419,7 +414,7 @@ export function SystemArchitecture() {
                       "Parallel LLM calls over sequential — 3× faster",
                       "gpt-4o-mini for board responses, gpt-4o for synthesis only — cost optimized",
                       "Supabase pgvector over Pinecone — one account, one dashboard, no extra dependency",
-                      "Instrumented from day one → found actual bottleneck was select_board, not generation",
+                      "Instrumented from day one → bottleneck was select_board (13s, 46% of latency), not the 5 parallel LLM calls — mitigated via streaming",
                     ].map((d) => (
                       <li key={d} className="flex gap-1.5 text-gray-600 leading-snug">
                         <span className="text-gray-400 flex-shrink-0" style={{ marginTop: 1 }}>·</span>
