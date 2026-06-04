@@ -2,7 +2,7 @@
 
 Assemble a board of Lenny's podcast guests to debate your toughest PM problem.
 
-**[Try it live](https://lennys-board-room.replit.app)** · **[Watch the demo](https://drive.google.com/file/d/1KPNofX7zokVpXbP6dQ0KJXF0/view)**
+**[Try it live](https://lennys-board-room.replit.app)** · **[Watch the demo](https://www.youtube.com/watch?v=QShHM6LvSwY)**
 
 ---
 
