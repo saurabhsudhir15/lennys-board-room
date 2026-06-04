@@ -6,6 +6,18 @@ Assemble a board of Lenny's podcast guests to debate your toughest PM problem.
 
 ---
 
+## Screenshots
+
+| Landing | Board Player |
+|---|---|
+| ![Landing](screenshots/lenny-landing.png) | ![Board Player](screenshots/lenny-board-player.png) |
+
+| Debate | Synthesis | Pick Your Move |
+|---|---|---|
+| ![Debate](screenshots/lenny-debate.png) | ![Synthesis](screenshots/lenny-synthesis.png) | ![Pick Your Move](screenshots/lenny-pick-your-move.png) |
+
+---
+
 ## What It Does
 
 You bring a real PM problem. The system pulls the most relevant guests from Lenny Rachitsky's podcast archive, assigns each a distinct advisory role, and runs an 8-step pipeline. You leave with three actionable bets, each backed by a specific advisor and a clear tradeoff.
