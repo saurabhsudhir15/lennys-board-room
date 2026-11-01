@@ -1,0 +1,1 @@
+- [Dependency lockfile ownership](dependency-lockfiles.md) — preserve one authoritative lockfile per dependency tree; avoid divergent npm and Bun resolutions.

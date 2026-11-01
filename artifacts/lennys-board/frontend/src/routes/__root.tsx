@@ -17,7 +17,7 @@ function NotFoundComponent() {
   );
 }
 
-function ErrorComponent({ error }: { error: Error }) {
+function ErrorComponent({ error }: { error: unknown }) {
   console.error(error);
   return (
     <div className="flex min-h-screen items-center justify-center px-4">
@@ -26,7 +26,7 @@ function ErrorComponent({ error }: { error: Error }) {
           Something went wrong
         </h1>
         <p className="mt-2 text-sm" style={{ color: "#8A8A7A" }}>
-          {error?.message ?? "An unexpected error occurred."}
+          {error instanceof Error ? error.message : "An unexpected error occurred."}
         </p>
         <div className="mt-6">
           <a href="/" className="underline" style={{ color: "#FF6B35" }}>
