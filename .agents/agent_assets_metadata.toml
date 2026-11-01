@@ -1,0 +1,9 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "TJhx6HxTQfgrSGPmzpleR"
+uri = "file://artifacts/lennys-board-video/public/audio/bg_music.mp3"
+type = "audio"
+title = "background music"
+description = "Generated music: Ambient atmospheric electronic with a warm pulsing synth bass and soft piano, 100 BPM, thoughtful tech product film. Patient intro, steady build, clear lift around 9 seconds, a stron…"

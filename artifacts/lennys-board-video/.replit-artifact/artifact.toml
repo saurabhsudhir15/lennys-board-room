@@ -1,0 +1,29 @@
+videoAspectRatio = "16:9"
+kind = "video"
+previewPath = "/lennys-board-video/"
+title = "Lenny’s Board — Project Overview"
+description = "An animated overview of Lenny’s Board of Directors, its AI advisory workflow, system design, and measured session performance."
+version = "1.0.0"
+id = "artifacts/lennys-board-video"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/lennys-board-video/" ]
+localPort = 21349
+
+[services.development]
+run = "pnpm --filter @workspace/lennys-board-video run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/lennys-board-video", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/lennys-board-video/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "21349"
+BASE_PATH = "/lennys-board-video/"
