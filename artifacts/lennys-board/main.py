@@ -5,6 +5,12 @@ import concurrent.futures
 import sys
 import traceback
 
+# Local/non-Replit environments don't have secrets injected into the process
+# env automatically — load a .env file if present. No-op in production hosts
+# that already inject real env vars (python-dotenv never overrides existing ones).
+from dotenv import load_dotenv
+load_dotenv()
+
 # ---------------------------------------------------------------------------
 # Patch streamlit BEFORE importing board.py.
 # board.py uses st.session_state["call_log"] for token logging.
@@ -79,6 +85,7 @@ async def stcore_stream_noop(websocket: WebSocket):
         pass
 
 @app.post("/assemble")
+@app.post("/api/assemble")
 def assemble(body: ProblemRequest):
     if not body.problem.strip():
         raise HTTPException(status_code=400, detail="problem is required")
